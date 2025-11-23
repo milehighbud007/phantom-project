@@ -1,0 +1,430 @@
+.PHONY: help install setup run stop clean test deps check-root wireless-check
+
+# PHANTOM - Penetration & Hacking Automation Network Threat Operations Manager
+# Colorado Tech University - Jack Cole Dissertation Project
+
+PYTHON := python3
+PIP := pip3
+NPM := npm
+SUDO := sudo
+
+# Directories
+BACKEND_DIR := backend
+FRONTEND_DIR := frontend
+AGENTS_DIR := agents
+TESTS_DIR := tests
+
+# Services
+POSTGRES_SERVICE := postgresql
+REDIS_SERVICE := redis-server
+MSF_RPC_PORT := 55552
+BACKEND_PORT := 8000
+FRONTEND_PORT := 3000
+
+# Wireless Interface
+WIRELESS_IFACE := wlan1
+
+##@ General
+
+help: ## Display this help
+	@awk 'BEGIN {FS = ":.*##"; printf "\n\033[1m PHANTOM - Red Team C2 Platform\033[0m\n\n\033[1mUsage:\033[0m\n  make \033[36m<target>\033[0m\n"} /^[a-zA-Z_-]+:.*?##/ { printf "  \033[36m%-15s\033[0m %s\n", $$1, $$2 } /^##@/ { printf "\n\033[1m%s\033[0m\n", substr($$0, 5) } ' $(MAKEFILE_LIST)
+
+##@ Installation
+
+check-root: ## Check if running as root (required for wireless tools)
+	@if [ "$$(id -u)" -ne 0 ]; then \
+		echo "❌ Must run as root for wireless tools. Use: sudo make <target>"; \
+		exit 1; \
+	else \
+		echo "✓ Running as root"; \
+	fi
+
+deps: ## Install system dependencies
+	@echo "📦 Installing system dependencies..."
+	$(SUDO) apt update
+	$(SUDO) apt install -y \
+		python3 python3-pip python3-venv \
+		nodejs npm \
+		postgresql postgresql-contrib \
+		redis-server \
+		nmap masscan \
+		aircrack-ng \
+		reaver \
+		bettercap \
+		git curl wget \
+		net-tools iproute2 \
+		libpcap-dev libssl-dev
+	@echo "✓ System dependencies installed"
+
+wireless-tools: check-root ## Install wireless attack tools
+	@echo "📡 Installing wireless tools..."
+	$(SUDO) apt install -y \
+		aircrack-ng \
+		airmon-ng \
+		airodump-ng \
+		aireplay-ng \
+		reaver \
+		bettercap \
+		macchanger
+	@echo "Installing trackerjacker..."
+	$(SUDO) $(PIP) install trackerjacker
+	@echo "Installing wifite..."
+	$(SUDO) apt install -y wifite || $(SUDO) $(PIP) install wifite2
+	@echo "Installing wifiphisher (already in project)..."
+	cd $(BACKEND_DIR) && $(SUDO) $(PIP) install -r wifiphisher_requirements.txt
+	@echo "✓ Wireless tools installed"
+
+metasploit: ## Install Metasploit Framework
+	@echo "🎯 Installing Metasploit..."
+	@if ! command -v msfconsole > /dev/null; then \
+		curl https://raw.githubusercontent.com/rapid7/metasploit-omnibus/master/config/templates/metasploit-framework-wrappers/msfupdate.erb > msfinstall && \
+		chmod 755 msfinstall && \
+		./msfinstall && \
+		rm msfinstall; \
+	fi
+	@echo "✓ Metasploit installed"
+
+install: deps metasploit wireless-tools ## Install all dependencies
+	@echo "✓ Full installation complete"
+
+setup: ## Setup project (create venv, install Python packages)
+	@echo "🔧 Setting up PHANTOM platform..."
+	
+	# Backend setup
+	@echo "Setting up backend..."
+	cd $(BACKEND_DIR) && $(PYTHON) -m venv venv
+	cd $(BACKEND_DIR) && . venv/bin/activate && $(PIP) install --upgrade pip
+	cd $(BACKEND_DIR) && . venv/bin/activate && $(PIP) install -r requirements_integrated.txt
+	
+	# Frontend setup
+	@echo "Setting up frontend..."
+	cd $(FRONTEND_DIR) && $(NPM) install
+	
+	# Database setup
+	@echo "Setting up database..."
+	$(SUDO) systemctl start $(POSTGRES_SERVICE)
+	$(SUDO) -u postgres psql -c "CREATE DATABASE c2_database;" || true
+	$(SUDO) -u postgres psql -c "CREATE USER c2_user WITH PASSWORD 'SecurePassword123';" || true
+	$(SUDO) -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE c2_database TO c2_user;" || true
+	
+	# Create database tables
+	cd $(BACKEND_DIR) && . venv/bin/activate && $(PYTHON) -c "from main import Base, engine; Base.metadata.create_all(bind=engine)"
+	
+	@echo "✓ Setup complete"
+
+##@ Operations
+
+wireless-check: check-root ## Check wireless interface and capabilities
+	@echo "📡 Checking wireless interface: $(WIRELESS_IFACE)"
+	@if ip link show $(WIRELESS_IFACE) > /dev/null 2>&1; then \
+		echo "✓ Interface $(WIRELESS_IFACE) exists"; \
+		iwconfig $(WIRELESS_IFACE) 2>/dev/null || echo "⚠️  Interface not wireless-capable"; \
+	else \
+		echo "❌ Interface $(WIRELESS_IFACE) not found"; \
+		echo "Available interfaces:"; \
+		ip link show | grep -E '^[0-9]+:' | awk '{print $$2}' | sed 's/:$$//'; \
+		exit 1; \
+	fi
+
+start-services: ## Start required services (PostgreSQL, Redis, MSF RPC)
+	@echo "🚀 Starting services..."
+	
+	# Start PostgreSQL
+	@echo "Starting PostgreSQL..."
+	$(SUDO) systemctl start $(POSTGRES_SERVICE)
+	$(SUDO) systemctl enable $(POSTGRES_SERVICE)
+	
+	# Start Redis
+	@echo "Starting Redis..."
+	$(SUDO) systemctl start $(REDIS_SERVICE)
+	$(SUDO) systemctl enable $(REDIS_SERVICE)
+	
+	# Start Metasploit RPC
+	@echo "Starting Metasploit RPC..."
+	@if ! pgrep -f msfrpcd > /dev/null; then \
+		msfrpcd -P kali -U msf -S -a 127.0.0.1 -p $(MSF_RPC_PORT) & \
+		sleep 3; \
+	fi
+	
+	@echo "✓ Services started"
+
+start-backend: ## Start integrated backend (C2 + Metasploit)
+	@echo "🔧 Starting PHANTOM backend..."
+	cd $(BACKEND_DIR) && . venv/bin/activate && $(PYTHON) integrated_server.py &
+	@echo "✓ Backend started on port $(BACKEND_PORT)"
+
+start-frontend: ## Start React frontend
+	@echo "🎨 Starting frontend..."
+	cd $(FRONTEND_DIR) && $(NPM) start &
+	@echo "✓ Frontend started on port $(FRONTEND_PORT)"
+
+start-agent: ## Start C2 agent (for testing)
+	@echo "🤖 Starting test agent..."
+	cd $(AGENTS_DIR) && $(PYTHON) agent.py &
+
+run: check-root start-services ## 🚀 START EVERYTHING - Main entry point
+	@echo ""
+	@echo "╔════════════════════════════════════════════════════════════╗"
+	@echo "║                                                            ║"
+	@echo "║   ██████╗ ██╗  ██╗ █████╗ ███╗   ██╗████████╗ ██████╗ ███╗   ███╗  ║"
+	@echo "║   ██╔══██╗██║  ██║██╔══██╗████╗  ██║╚══██╔══╝██╔═══██╗████╗ ████║  ║"
+	@echo "║   ██████╔╝███████║███████║██╔██╗ ██║   ██║   ██║   ██║██╔████╔██║  ║"
+	@echo "║   ██╔═══╝ ██╔══██║██╔══██║██║╚██╗██║   ██║   ██║   ██║██║╚██╔╝██║  ║"
+	@echo "║   ██║     ██║  ██║██║  ██║██║ ╚████║   ██║   ╚██████╔╝██║ ╚═╝ ██║  ║"
+	@echo "║   ╚═╝     ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═══╝   ╚═╝    ╚═════╝ ╚═╝     ╚═╝  ║"
+	@echo "║                                                            ║"
+	@echo "║    Penetration & Hacking Automation Network Threat         ║"
+	@echo "║              Operations Manager                            ║"
+	@echo "║                                                            ║"
+	@echo "║    Colorado Tech University - Jack Cole                    ║"
+	@echo "║                                                            ║"
+	@echo "╚════════════════════════════════════════════════════════════╝"
+	@echo ""
+	@sleep 2
+	
+	@echo "⏳ Waiting for services to initialize..."
+	@sleep 3
+	
+	@$(MAKE) --no-print-directory start-backend
+	@sleep 5
+	
+	@$(MAKE) --no-print-directory start-frontend
+	@sleep 3
+	
+	@echo ""
+	@echo "╔════════════════════════════════════════════════════════════╗"
+	@echo "║               ✓ PHANTOM PLATFORM ONLINE                    ║"
+	@echo "╚════════════════════════════════════════════════════════════╝"
+	@echo ""
+	@echo "  🎯 C2 API:              http://localhost:$(BACKEND_PORT)/api"
+	@echo "  🔧 Metasploit API:      http://localhost:$(BACKEND_PORT)/msf"
+	@echo "  📊 MSF Web Console:     http://localhost:$(BACKEND_PORT)/msf/console"
+	@echo "  🎨 React Console:       http://localhost:$(FRONTEND_PORT)"
+	@echo "  📖 API Documentation:   http://localhost:$(BACKEND_PORT)/docs"
+	@echo "  📡 Wireless Interface:  $(WIRELESS_IFACE)"
+	@echo ""
+	@echo "  Press Ctrl+C to stop all services"
+	@echo ""
+	
+	@# Keep alive
+	@trap 'make stop' INT; \
+	while true; do sleep 1; done
+
+stop: ## Stop all services
+	@echo "🛑 Stopping PHANTOM platform..."
+	
+	@# Stop frontend
+	@-pkill -f "npm start" 2>/dev/null || true
+	@-pkill -f "react-scripts" 2>/dev/null || true
+	
+	@# Stop backend
+	@-pkill -f "integrated_server.py" 2>/dev/null || true
+	@-pkill -f "uvicorn" 2>/dev/null || true
+	
+	@# Stop Metasploit RPC
+	@-pkill -f "msfrpcd" 2>/dev/null || true
+	
+	@# Stop agents
+	@-pkill -f "agent.py" 2>/dev/null || true
+	
+	@# Disable monitor mode if enabled
+	@-$(SUDO) airmon-ng stop $(WIRELESS_IFACE)mon 2>/dev/null || true
+	
+	@# Restart NetworkManager
+	@-$(SUDO) systemctl restart NetworkManager 2>/dev/null || true
+	
+	@echo "✓ All services stopped"
+
+restart: stop run ## Restart entire platform
+
+##@ Testing
+
+test: ## Run all tests
+	@echo "🧪 Running tests..."
+	cd $(TESTS_DIR) && $(PYTHON) -m pytest -v --cov=../$(BACKEND_DIR) --cov-report=html
+	@echo "✓ Tests complete. Coverage report: tests/htmlcov/index.html"
+
+test-backend: ## Test backend only
+	@echo "🧪 Testing backend..."
+	cd $(TESTS_DIR) && $(PYTHON) -m pytest -v -k "not Frontend"
+
+test-integration: ## Test integration
+	@echo "🧪 Testing integration..."
+	cd $(TESTS_DIR) && $(PYTHON) -m pytest -v -k "Integration"
+
+test-wireless: check-root wireless-check ## Test wireless tools
+	@echo "🧪 Testing wireless tools..."
+	@echo "Checking aircrack-ng..."
+	@aircrack-ng --help > /dev/null && echo "✓ aircrack-ng OK" || echo "❌ aircrack-ng failed"
+	@echo "Checking masscan..."
+	@masscan --help > /dev/null 2>&1 && echo "✓ masscan OK" || echo "❌ masscan failed"
+	@echo "Checking bettercap..."
+	@bettercap --help > /dev/null 2>&1 && echo "✓ bettercap OK" || echo "❌ bettercap failed"
+	@echo "Checking reaver..."
+	@reaver --help > /dev/null 2>&1 && echo "✓ reaver OK" || echo "❌ reaver failed"
+
+##@ Development
+
+dev-backend: ## Run backend in development mode
+	cd $(BACKEND_DIR) && . venv/bin/activate && uvicorn integrated_server:app --reload --host 0.0.0.0 --port $(BACKEND_PORT)
+
+dev-frontend: ## Run frontend in development mode
+	cd $(FRONTEND_DIR) && $(NPM) start
+
+logs: ## View backend logs
+	tail -f $(BACKEND_DIR)/logs/c2_platform.log
+
+logs-ai: ## View AI learning logs
+	tail -f $(BACKEND_DIR)/metasploit_ai_knowledge.json
+
+monitor: ## Monitor system resources
+	htop
+
+##@ Database
+
+db-reset: ## Reset database (WARNING: deletes all data)
+	@echo "⚠️  Resetting database..."
+	@read -p "Are you sure? [y/N] " -n 1 -r; \
+	if [[ $$REPLY =~ ^[Yy]$$ ]]; then \
+		$(SUDO) -u postgres psql -c "DROP DATABASE c2_database;" || true; \
+		$(SUDO) -u postgres psql -c "CREATE DATABASE c2_database;"; \
+		$(SUDO) -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE c2_database TO c2_user;"; \
+		cd $(BACKEND_DIR) && . venv/bin/activate && $(PYTHON) -c "from main import Base, engine; Base.metadata.create_all(bind=engine)"; \
+		echo "✓ Database reset"; \
+	fi
+
+db-backup: ## Backup database
+	@echo "💾 Backing up database..."
+	$(SUDO) -u postgres pg_dump c2_database > backup_$$(date +%Y%m%d_%H%M%S).sql
+	@echo "✓ Backup complete"
+
+db-restore: ## Restore database from backup
+	@echo "📥 Available backups:"
+	@ls -1 backup_*.sql 2>/dev/null || echo "No backups found"
+	@read -p "Enter backup filename: " backup; \
+	$(SUDO) -u postgres psql c2_database < $$backup
+
+##@ Wireless Operations
+
+wireless-monitor-enable: check-root wireless-check ## Enable monitor mode on wireless interface
+	@echo "📡 Enabling monitor mode on $(WIRELESS_IFACE)..."
+	$(SUDO) airmon-ng check kill
+	$(SUDO) airmon-ng start $(WIRELESS_IFACE)
+	@echo "✓ Monitor mode enabled"
+
+wireless-monitor-disable: check-root ## Disable monitor mode
+	@echo "📡 Disabling monitor mode..."
+	$(SUDO) airmon-ng stop $(WIRELESS_IFACE)mon || true
+	$(SUDO) systemctl restart NetworkManager
+	@echo "✓ Monitor mode disabled"
+
+wireless-scan: check-root wireless-monitor-enable ## Scan for WiFi networks
+	@echo "📡 Scanning for WiFi networks..."
+	$(SUDO) airodump-ng $(WIRELESS_IFACE)mon
+
+##@ Maintenance
+
+clean: ## Clean build artifacts
+	@echo "🧹 Cleaning..."
+	find . -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null || true
+	find . -type f -name "*.pyc" -delete 2>/dev/null || true
+	find . -type d -name "*.egg-info" -exec rm -rf {} + 2>/dev/null || true
+	find . -type d -name ".pytest_cache" -exec rm -rf {} + 2>/dev/null || true
+	rm -rf $(BACKEND_DIR)/venv 2>/dev/null || true
+	rm -rf $(FRONTEND_DIR)/node_modules 2>/dev/null || true
+	rm -rf $(FRONTEND_DIR)/build 2>/dev/null || true
+	@echo "✓ Cleaned"
+
+clean-logs: ## Clean log files
+	@echo "🧹 Cleaning logs..."
+	rm -rf $(BACKEND_DIR)/logs/*.log
+	@echo "✓ Logs cleaned"
+
+update: ## Update all dependencies
+	@echo "📦 Updating dependencies..."
+	cd $(BACKEND_DIR) && . venv/bin/activate && $(PIP) install --upgrade -r requirements_integrated.txt
+	cd $(FRONTEND_DIR) && $(NPM) update
+	@echo "✓ Dependencies updated"
+
+##@ Information
+
+status: ## Show system status
+	@echo "═══════════════════════════════════════"
+	@echo "  PHANTOM Platform Status"
+	@echo "═══════════════════════════════════════"
+	@echo ""
+	@echo "Services:"
+	@systemctl is-active $(POSTGRES_SERVICE) > /dev/null && echo "  ✓ PostgreSQL: running" || echo "  ✗ PostgreSQL: stopped"
+	@systemctl is-active $(REDIS_SERVICE) > /dev/null && echo "  ✓ Redis: running" || echo "  ✗ Redis: stopped"
+	@pgrep -f msfrpcd > /dev/null && echo "  ✓ Metasploit RPC: running" || echo "  ✗ Metasploit RPC: stopped"
+	@pgrep -f integrated_server > /dev/null && echo "  ✓ Backend: running" || echo "  ✗ Backend: stopped"
+	@pgrep -f "npm start" > /dev/null && echo "  ✓ Frontend: running" || echo "  ✗ Frontend: stopped"
+	@echo ""
+	@echo "Ports:"
+	@netstat -tuln 2>/dev/null | grep $(BACKEND_PORT) > /dev/null && echo "  ✓ Backend port $(BACKEND_PORT): open" || echo "  ✗ Backend port $(BACKEND_PORT): closed"
+	@netstat -tuln 2>/dev/null | grep $(FRONTEND_PORT) > /dev/null && echo "  ✓ Frontend port $(FRONTEND_PORT): open" || echo "  ✗ Frontend port $(FRONTEND_PORT): closed"
+	@netstat -tuln 2>/dev/null | grep $(MSF_RPC_PORT) > /dev/null && echo "  ✓ MSF RPC port $(MSF_RPC_PORT): open" || echo "  ✗ MSF RPC port $(MSF_RPC_PORT): closed"
+	@echo ""
+	@echo "Wireless:"
+	@ip link show $(WIRELESS_IFACE) > /dev/null 2>&1 && echo "  ✓ Interface $(WIRELESS_IFACE): exists" || echo "  ✗ Interface $(WIRELESS_IFACE): not found"
+	@ip link show $(WIRELESS_IFACE)mon > /dev/null 2>&1 && echo "  ✓ Monitor mode: enabled" || echo "  ✗ Monitor mode: disabled"
+	@echo ""
+
+info: ## Show project information
+	@echo "╔════════════════════════════════════════════════════════════╗"
+	@echo "║                     PHANTOM v2.0                           ║"
+	@echo "╠════════════════════════════════════════════════════════════╣"
+	@echo "║  Penetration & Hacking Automation Network Threat           ║"
+	@echo "║              Operations Manager                            ║"
+	@echo "╠════════════════════════════════════════════════════════════╣"
+	@echo "║  Author:     Jack Cole                                     ║"
+	@echo "║  School:     Colorado Tech University                      ║"
+	@echo "║  Project:    Cybersecurity Dissertation                    ║"
+	@echo "╠════════════════════════════════════════════════════════════╣"
+	@echo "║  Components:                                               ║"
+	@echo "║   • Enterprise C2 Framework (FastAPI)                      ║"
+	@echo "║   • Metasploit Automation (Flask)                          ║"
+	@echo "║   • AI Learning System                                     ║"
+	@echo "║   • Wireless Attack Suite                                  ║"
+	@echo "║   • Network Reconnaissance                                 ║"
+	@echo "║   • React Frontend Console                                 ║"
+	@echo "╠════════════════════════════════════════════════════════════╣"
+	@echo "║  Tools Integrated: 77+                                     ║"
+	@echo "╚════════════════════════════════════════════════════════════╝"
+
+version: ## Show version information
+	@echo "PHANTOM v2.0.0"
+	@echo "Python: $$($(PYTHON) --version)"
+	@echo "Node.js: $$(node --version)"
+	@echo "PostgreSQL: $$(psql --version | head -1)"
+	@echo "Redis: $$(redis-cli --version)"
+	@echo "Metasploit: $$(msfconsole --version 2>/dev/null | head -1 || echo 'Not installed')"
+
+##@ Docker (Alternative)
+
+docker-build: ## Build Docker containers
+	docker-compose build
+
+docker-up: ## Start with Docker
+	docker-compose up -d
+
+docker-down: ## Stop Docker containers
+	docker-compose down
+
+docker-logs: ## View Docker logs
+	docker-compose logs -f
+
+##@ Quick Actions
+
+quick-scan: check-root ## Quick network scan (nmap + masscan)
+	@echo "🔍 Running quick network scan..."
+	@read -p "Enter network (e.g., 192.168.1.0/24): " network; \
+	echo "Running nmap..."; \
+	nmap -sn $$network; \
+	echo "Running masscan..."; \
+	$(SUDO) masscan $$network -p1-1000 --rate 10000
+
+quick-wireless: check-root wireless-monitor-enable ## Quick wireless scan
+	@echo "📡 Quick wireless scan (30 seconds)..."
+	timeout 30 $(SUDO) airodump-ng $(WIRELESS_IFACE)mon || true
+	@$(MAKE) --no-print-directory wireless-monitor-disable

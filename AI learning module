@@ -1,0 +1,518 @@
+"""
+AI Learning Module for Penetration Testing
+Machine learning-powered exploit selection and success prediction
+
+IMPORTANT: For authorized security testing only
+"""
+
+import json
+import os
+from typing import Dict, List, Optional, Tuple
+from datetime import datetime
+from collections import defaultdict, Counter
+import hashlib
+
+class PenetrationTestingAI:
+    """
+    AI system that learns from exploit attempts to improve success rates
+    Uses statistical analysis and pattern recognition
+    """
+    
+    def __init__(self, knowledge_file: str = "metasploit_ai_knowledge.json"):
+        self.knowledge_file = knowledge_file
+        self.knowledge = {
+            "targets": {},           # MAC -> target profile
+            "exploits": {},          # exploit_name -> statistics
+            "payloads": {},          # payload_name -> statistics
+            "combinations": {},      # exploit+payload -> success data
+            "os_patterns": {},       # os_type -> successful exploits
+            "vendor_patterns": {},   # vendor -> successful exploits
+            "port_patterns": {},     # open_ports -> successful exploits
+            "time_patterns": {},     # time_of_day -> success rates
+            "metadata": {
+                "total_attempts": 0,
+                "successful_attempts": 0,
+                "last_updated": None,
+                "version": "2.0"
+            }
+        }
+        self.load_knowledge()
+    
+    def load_knowledge(self):
+        """Load existing knowledge from file"""
+        if os.path.exists(self.knowledge_file):
+            try:
+                with open(self.knowledge_file, 'r') as f:
+                    loaded = json.load(f)
+                    # Merge with defaults to handle version updates
+                    for key in self.knowledge.keys():
+                        if key in loaded:
+                            self.knowledge[key] = loaded[key]
+                print(f"[AI] Loaded knowledge base: {self.knowledge['metadata']['total_attempts']} attempts")
+            except Exception as e:
+                print(f"[AI] Error loading knowledge: {e}")
+    
+    def save_knowledge(self):
+        """Persist knowledge to disk"""
+        self.knowledge["metadata"]["last_updated"] = datetime.utcnow().isoformat()
+        try:
+            with open(self.knowledge_file, 'w') as f:
+                json.dump(self.knowledge, f, indent=2)
+        except Exception as e:
+            print(f"[AI] Error saving knowledge: {e}")
+    
+    def update_target_profile(self, mac: str, ip: str, hostname: str = "", 
+                              vendor: str = "", os_guess: str = "Unknown"):
+        """Update or create target profile"""
+        if mac not in self.knowledge["targets"]:
+            self.knowledge["targets"][mac] = {
+                "first_seen": datetime.utcnow().isoformat(),
+                "ips": [],
+                "hostnames": [],
+                "vendors": [],
+                "os_guesses": [],
+                "open_ports": [],
+                "successful_exploits": [],
+                "failed_exploits": [],
+                "last_exploit_attempt": None
+            }
+        
+        target = self.knowledge["targets"][mac]
+        
+        # Update unique values
+        if ip and ip not in target["ips"]:
+            target["ips"].append(ip)
+        if hostname and hostname not in target["hostnames"]:
+            target["hostnames"].append(hostname)
+        if vendor and vendor not in target["vendors"]:
+            target["vendors"].append(vendor)
+        if os_guess and os_guess not in target["os_guesses"]:
+            target["os_guesses"].append(os_guess)
+        
+        target["last_seen"] = datetime.utcnow().isoformat()
+        self.save_knowledge()
+    
+    def record_exploit_attempt(self, exploit: str, payload: str, target_mac: str, 
+                               success: bool, error_msg: Optional[str] = None,
+                               open_ports: Optional[List[int]] = None):
+        """Record the result of an exploit attempt"""
+        
+        # Update metadata
+        self.knowledge["metadata"]["total_attempts"] += 1
+        if success:
+            self.knowledge["metadata"]["successful_attempts"] += 1
+        
+        # Initialize structures if needed
+        if exploit not in self.knowledge["exploits"]:
+            self.knowledge["exploits"][exploit] = {
+                "attempts": 0,
+                "successes": 0,
+                "failures": 0,
+                "targets_attempted": [],
+                "targets_successful": [],
+                "common_errors": Counter()
+            }
+        
+        if payload not in self.knowledge["payloads"]:
+            self.knowledge["payloads"][payload] = {
+                "attempts": 0,
+                "successes": 0,
+                "failures": 0
+            }
+        
+        combo_key = f"{exploit}|{payload}"
+        if combo_key not in self.knowledge["combinations"]:
+            self.knowledge["combinations"][combo_key] = {
+                "attempts": 0,
+                "successes": 0,
+                "failures": 0
+            }
+        
+        # Update exploit statistics
+        exploit_data = self.knowledge["exploits"][exploit]
+        exploit_data["attempts"] += 1
+        
+        if success:
+            exploit_data["successes"] += 1
+            if target_mac not in exploit_data["targets_successful"]:
+                exploit_data["targets_successful"].append(target_mac)
+        else:
+            exploit_data["failures"] += 1
+            if error_msg:
+                # Track common errors
+                error_key = self._categorize_error(error_msg)
+                if not hasattr(exploit_data["common_errors"], 'update'):
+                    exploit_data["common_errors"] = Counter()
+                exploit_data["common_errors"][error_key] = \
+                    exploit_data["common_errors"].get(error_key, 0) + 1
+        
+        if target_mac not in exploit_data["targets_attempted"]:
+            exploit_data["targets_attempted"].append(target_mac)
+        
+        # Update payload statistics
+        payload_data = self.knowledge["payloads"][payload]
+        payload_data["attempts"] += 1
+        if success:
+            payload_data["successes"] += 1
+        else:
+            payload_data["failures"] += 1
+        
+        # Update combination statistics
+        combo_data = self.knowledge["combinations"][combo_key]
+        combo_data["attempts"] += 1
+        if success:
+            combo_data["successes"] += 1
+        else:
+            combo_data["failures"] += 1
+        
+        # Update target profile
+        if target_mac in self.knowledge["targets"]:
+            target = self.knowledge["targets"][target_mac]
+            target["last_exploit_attempt"] = datetime.utcnow().isoformat()
+            
+            if success:
+                if exploit not in target["successful_exploits"]:
+                    target["successful_exploits"].append(exploit)
+            else:
+                if exploit not in target["failed_exploits"]:
+                    target["failed_exploits"].append(exploit)
+            
+            # Update OS patterns
+            os_guess = target["os_guesses"][0] if target["os_guesses"] else "Unknown"
+            if success:
+                if os_guess not in self.knowledge["os_patterns"]:
+                    self.knowledge["os_patterns"][os_guess] = Counter()
+                self.knowledge["os_patterns"][os_guess][exploit] = \
+                    self.knowledge["os_patterns"][os_guess].get(exploit, 0) + 1
+            
+            # Update vendor patterns
+            vendor = target["vendors"][0] if target["vendors"] else "Unknown"
+            if success:
+                if vendor not in self.knowledge["vendor_patterns"]:
+                    self.knowledge["vendor_patterns"][vendor] = Counter()
+                self.knowledge["vendor_patterns"][vendor][exploit] = \
+                    self.knowledge["vendor_patterns"][vendor].get(exploit, 0) + 1
+            
+            # Update port patterns
+            if open_ports and success:
+                port_key = ",".join(map(str, sorted(open_ports[:10])))  # Limit to 10 ports
+                if port_key not in self.knowledge["port_patterns"]:
+                    self.knowledge["port_patterns"][port_key] = Counter()
+                self.knowledge["port_patterns"][port_key][exploit] = \
+                    self.knowledge["port_patterns"][port_key].get(exploit, 0) + 1
+        
+        self.save_knowledge()
+    
+    def _categorize_error(self, error_msg: str) -> str:
+        """Categorize error messages into common types"""
+        error_lower = error_msg.lower()
+        
+        if "timeout" in error_lower or "timed out" in error_lower:
+            return "timeout"
+        elif "connection refused" in error_lower:
+            return "connection_refused"
+        elif "auth" in error_lower or "authentication" in error_lower:
+            return "authentication_failed"
+        elif "permission" in error_lower or "access denied" in error_lower:
+            return "permission_denied"
+        elif "not found" in error_lower or "404" in error_lower:
+            return "not_found"
+        elif "exploit completed but no session" in error_lower:
+            return "no_session"
+        else:
+            return "other"
+    
+    def recommend_exploit(self, target_mac: str, os_guess: Optional[str] = None,
+                          vendor: Optional[str] = None, 
+                          open_ports: Optional[List[int]] = None) -> Optional[Dict]:
+        """
+        Recommend best exploit for target based on learned patterns
+        Returns: dict with exploit name, success rate, confidence
+        """
+        
+        if target_mac not in self.knowledge["targets"]:
+            # No history for this target, use general patterns
+            return self._recommend_from_patterns(os_guess, vendor, open_ports)
+        
+        target = self.knowledge["targets"][target_mac]
+        
+        # Check if we've already successfully exploited this target
+        if target["successful_exploits"]:
+            # Return most recent successful exploit
+            exploit_name = target["successful_exploits"][-1]
+            exploit_data = self.knowledge["exploits"].get(exploit_name, {})
+            return {
+                "exploit": exploit_name,
+                "success_rate": self._calculate_success_rate(exploit_data),
+                "attempts": exploit_data.get("attempts", 0),
+                "confidence": "high",
+                "reason": "Previously successful on this target"
+            }
+        
+        # No previous success, try pattern-based recommendation
+        recommendation = self._recommend_from_patterns(
+            os_guess or (target["os_guesses"][0] if target["os_guesses"] else None),
+            vendor or (target["vendors"][0] if target["vendors"] else None),
+            open_ports or target.get("open_ports", [])
+        )
+        
+        # Filter out previously failed exploits
+        if recommendation and recommendation["exploit"] in target["failed_exploits"]:
+            # This exploit already failed, find alternative
+            return self._find_alternative_exploit(target["failed_exploits"])
+        
+        return recommendation
+    
+    def _recommend_from_patterns(self, os_guess: Optional[str], 
+                                  vendor: Optional[str],
+                                  open_ports: Optional[List[int]]) -> Optional[Dict]:
+        """Recommend exploit based on OS, vendor, and port patterns"""
+        
+        candidates = Counter()
+        
+        # Check OS patterns
+        if os_guess and os_guess in self.knowledge["os_patterns"]:
+            for exploit, count in self.knowledge["os_patterns"][os_guess].items():
+                candidates[exploit] += count * 3  # OS match is high priority
+        
+        # Check vendor patterns
+        if vendor and vendor in self.knowledge["vendor_patterns"]:
+            for exploit, count in self.knowledge["vendor_patterns"][vendor].items():
+                candidates[exploit] += count * 2  # Vendor match is medium priority
+        
+        # Check port patterns
+        if open_ports:
+            port_key = ",".join(map(str, sorted(open_ports[:10])))
+            if port_key in self.knowledge["port_patterns"]:
+                for exploit, count in self.knowledge["port_patterns"][port_key].items():
+                    candidates[exploit] += count  # Port match is lower priority
+        
+        # If we have candidates, return the best one
+        if candidates:
+            best_exploit = candidates.most_common(1)[0][0]
+            exploit_data = self.knowledge["exploits"][best_exploit]
+            
+            return {
+                "exploit": best_exploit,
+                "success_rate": self._calculate_success_rate(exploit_data),
+                "attempts": exploit_data["attempts"],
+                "confidence": "medium",
+                "reason": "Pattern-based recommendation"
+            }
+        
+        # No pattern matches, return most successful exploit overall
+        return self._get_most_successful_exploit()
+    
+    def _find_alternative_exploit(self, failed_exploits: List[str]) -> Optional[Dict]:
+        """Find an alternative exploit that hasn't been tried"""
+        
+        # Get all exploits sorted by success rate
+        successful_exploits = [
+            (name, data) for name, data in self.knowledge["exploits"].items()
+            if name not in failed_exploits and data.get("successes", 0) > 0
+        ]
+        
+        if not successful_exploits:
+            return None
+        
+        # Sort by success rate
+        successful_exploits.sort(
+            key=lambda x: self._calculate_success_rate(x[1]),
+            reverse=True
+        )
+        
+        best = successful_exploits[0]
+        return {
+            "exploit": best[0],
+            "success_rate": self._calculate_success_rate(best[1]),
+            "attempts": best[1]["attempts"],
+            "confidence": "low",
+            "reason": "Alternative after previous failures"
+        }
+    
+    def _get_most_successful_exploit(self) -> Optional[Dict]:
+        """Return the exploit with highest overall success rate"""
+        
+        if not self.knowledge["exploits"]:
+            return None
+        
+        # Filter to exploits with at least 5 attempts for statistical significance
+        qualified = [
+            (name, data) for name, data in self.knowledge["exploits"].items()
+            if data.get("attempts", 0) >= 5
+        ]
+        
+        if not qualified:
+            # Not enough data, return most used exploit
+            if self.knowledge["exploits"]:
+                most_used = max(
+                    self.knowledge["exploits"].items(),
+                    key=lambda x: x[1].get("attempts", 0)
+                )
+                return {
+                    "exploit": most_used[0],
+                    "success_rate": self._calculate_success_rate(most_used[1]),
+                    "attempts": most_used[1]["attempts"],
+                    "confidence": "very_low",
+                    "reason": "Insufficient data"
+                }
+            return None
+        
+        # Sort by success rate
+        qualified.sort(
+            key=lambda x: self._calculate_success_rate(x[1]),
+            reverse=True
+        )
+        
+        best = qualified[0]
+        return {
+            "exploit": best[0],
+            "success_rate": self._calculate_success_rate(best[1]),
+            "attempts": best[1]["attempts"],
+            "confidence": "medium",
+            "reason": "Highest overall success rate"
+        }
+    
+    def _calculate_success_rate(self, exploit_data: Dict) -> float:
+        """Calculate success rate for an exploit"""
+        attempts = exploit_data.get("attempts", 0)
+        if attempts == 0:
+            return 0.0
+        successes = exploit_data.get("successes", 0)
+        return successes / attempts
+    
+    def recommend_payload(self, exploit: str) -> Optional[str]:
+        """Recommend best payload for an exploit"""
+        
+        # Find all combinations with this exploit
+        matching_combos = [
+            (combo.split("|")[1], data)
+            for combo, data in self.knowledge["combinations"].items()
+            if combo.startswith(exploit + "|")
+        ]
+        
+        if not matching_combos:
+            return None
+        
+        # Sort by success rate
+        matching_combos.sort(
+            key=lambda x: self._calculate_success_rate(x[1]),
+            reverse=True
+        )
+        
+        return matching_combos[0][0] if matching_combos else None
+    
+    def should_retry_exploit(self, exploit: str, target_mac: str, 
+                             max_failures: int = 3) -> bool:
+        """
+        Determine if we should retry an exploit on a target
+        Returns False if it's failed too many times
+        """
+        
+        if target_mac not in self.knowledge["targets"]:
+            return True
+        
+        target = self.knowledge["targets"][target_mac]
+        
+        # Count how many times this exploit has failed on this target
+        failed_count = target["failed_exploits"].count(exploit)
+        
+        return failed_count < max_failures
+    
+    def get_statistics(self) -> Dict:
+        """Get overall AI statistics"""
+        
+        total = self.knowledge["metadata"]["total_attempts"]
+        successful = self.knowledge["metadata"]["successful_attempts"]
+        
+        return {
+            "total_operations": total,
+            "successful_operations": successful,
+            "success_rate": successful / total if total > 0 else 0.0,
+            "targets_profiled": len(self.knowledge["targets"]),
+            "exploits_learned": len(self.knowledge["exploits"]),
+            "payloads_learned": len(self.knowledge["payloads"]),
+            "patterns_discovered": (
+                len(self.knowledge["os_patterns"]) +
+                len(self.knowledge["vendor_patterns"]) +
+                len(self.knowledge["port_patterns"])
+            ),
+            "last_updated": self.knowledge["metadata"].get("last_updated")
+        }
+    
+    def export_knowledge_report(self) -> str:
+        """Export human-readable knowledge report"""
+        
+        stats = self.get_statistics()
+        
+        report = []
+        report.append("=" * 60)
+        report.append("AI PENETRATION TESTING KNOWLEDGE REPORT")
+        report.append("=" * 60)
+        report.append(f"Generated: {datetime.utcnow().isoformat()}")
+        report.append(f"Total Operations: {stats['total_operations']}")
+        report.append(f"Success Rate: {stats['success_rate']:.1%}")
+        report.append(f"Targets Profiled: {stats['targets_profiled']}")
+        report.append("")
+        
+        # Top exploits
+        report.append("TOP 10 EXPLOITS BY SUCCESS RATE:")
+        report.append("-" * 60)
+        
+        exploits_ranked = [
+            (name, data, self._calculate_success_rate(data))
+            for name, data in self.knowledge["exploits"].items()
+            if data.get("attempts", 0) >= 3  # Min 3 attempts
+        ]
+        exploits_ranked.sort(key=lambda x: x[2], reverse=True)
+        
+        for i, (name, data, rate) in enumerate(exploits_ranked[:10], 1):
+            report.append(
+                f"{i:2d}. {name[:50]:<50} | "
+                f"Rate: {rate:.1%} | "
+                f"Attempts: {data['attempts']}"
+            )
+        
+        report.append("")
+        report.append("OS PATTERNS:")
+        report.append("-" * 60)
+        
+        for os_type, exploits in self.knowledge["os_patterns"].items():
+            top_exploit = exploits.most_common(1)
+            if top_exploit:
+                report.append(f"{os_type:<20} -> {top_exploit[0][0]} ({top_exploit[0][1]} successes)")
+        
+        report.append("")
+        report.append("=" * 60)
+        
+        return "\n".join(report)
+    
+    def get_target_profile(self, target_mac: str) -> Optional[Dict]:
+        """Get complete profile for a target"""
+        return self.knowledge["targets"].get(target_mac)
+    
+    def predict_success_probability(self, exploit: str, target_mac: str) -> float:
+        """
+        Predict probability of success for exploit on target
+        Returns value between 0.0 and 1.0
+        """
+        
+        if exploit not in self.knowledge["exploits"]:
+            return 0.5  # No data, 50/50
+        
+        exploit_data = self.knowledge["exploits"][exploit]
+        base_rate = self._calculate_success_rate(exploit_data)
+        
+        # Adjust based on target-specific factors
+        if target_mac in self.knowledge["targets"]:
+            target = self.knowledge["targets"][target_mac]
+            
+            # Boost if previously successful on this target
+            if exploit in target["successful_exploits"]:
+                return min(base_rate + 0.3, 1.0)
+            
+            # Reduce if previously failed on this target
+            if exploit in target["failed_exploits"]:
+                return max(base_rate - 0.3, 0.0)
+        
+        return base_rate

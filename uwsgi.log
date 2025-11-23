@@ -1,0 +1,936 @@
+*** Starting uWSGI 2.0.31 (64bit) on [Fri Nov 14 23:36:24 2025] ***
+compiled with version: 15.2.1 20251112 on 14 November 2025 10:18:23
+os: Linux-6.17.7-arch1-1 #1 SMP PREEMPT_DYNAMIC Sun, 02 Nov 2025 17:27:22 +0000
+nodename: devpen11-unknown
+machine: x86_64
+clock source: unix
+pcre jit disabled
+detected number of CPU cores: 4
+current working directory: /home/devpen11/Desktop/MetasploitMCP
+detected binary path: /home/devpen11/Desktop/MetasploitMCP/.venv/bin/uwsgi
+your processes number limit is 15273
+your memory page size is 4096 bytes
+detected max file descriptor number: 1024
+lock engine: pthread robust mutexes
+thunder lock: disabled (you can enable it with --thunder-lock)
+uwsgi socket 0 bound to UNIX address /tmp/metasploitmcp.sock fd 3
+Python version: 3.13.7 (main, Aug 15 2025, 12:34:02) [GCC 15.2.1 20250813]
+PEP 405 virtualenv detected: /home/devpen11/Desktop/MetasploitMCP/.venv
+Set PythonHome to /home/devpen11/Desktop/MetasploitMCP/.venv
+Python main interpreter initialized at 0x7f063cd32df0
+python threads support enabled
+your server socket listen backlog is limited to 100 connections
+your mercy for graceful operations on workers is 60 seconds
+mapped 364600 bytes (356 KB) for 4 cores
+*** Operational MODE: preforking ***
+WSGI app 0 (mountpoint='') ready in 4 seconds on interpreter 0x7f063cd32df0 pid: 247880 (default app)
+*** uWSGI is running in multiple interpreter mode ***
+spawned uWSGI master process (pid: 247880)
+spawned uWSGI worker 1 (pid: 247881, cores: 1)
+spawned uWSGI worker 2 (pid: 247882, cores: 1)
+spawned uWSGI worker 3 (pid: 247883, cores: 1)
+spawned uWSGI worker 4 (pid: 247884, cores: 1)
+SIGINT/SIGTERM received...killing workers...
+worker 1 buried after 1 seconds
+worker 2 buried after 1 seconds
+worker 3 buried after 1 seconds
+worker 4 buried after 1 seconds
+goodbye to uWSGI.
+VACUUM: unix socket /tmp/metasploitmcp.sock removed.
+*** Starting uWSGI 2.0.31 (64bit) on [Fri Nov 14 23:40:00 2025] ***
+compiled with version: 15.2.1 20251112 on 14 November 2025 10:18:23
+os: Linux-6.17.7-arch1-1 #1 SMP PREEMPT_DYNAMIC Sun, 02 Nov 2025 17:27:22 +0000
+nodename: devpen11-unknown
+machine: x86_64
+clock source: unix
+pcre jit disabled
+detected number of CPU cores: 4
+current working directory: /home/devpen11/Desktop/MetasploitMCP
+detected binary path: /home/devpen11/Desktop/MetasploitMCP/.venv/bin/uwsgi
+your processes number limit is 15273
+your memory page size is 4096 bytes
+detected max file descriptor number: 1024
+lock engine: pthread robust mutexes
+thunder lock: disabled (you can enable it with --thunder-lock)
+uwsgi socket 0 bound to UNIX address /tmp/metasploitmcp.sock fd 3
+Python version: 3.13.7 (main, Aug 15 2025, 12:34:02) [GCC 15.2.1 20250813]
+PEP 405 virtualenv detected: /home/devpen11/Desktop/MetasploitMCP/.venv
+Set PythonHome to /home/devpen11/Desktop/MetasploitMCP/.venv
+Python main interpreter initialized at 0x7f69cef32df0
+python threads support enabled
+your server socket listen backlog is limited to 100 connections
+your mercy for graceful operations on workers is 60 seconds
+mapped 364600 bytes (356 KB) for 4 cores
+*** Operational MODE: preforking ***
+WSGI app 0 (mountpoint='') ready in 1 seconds on interpreter 0x7f69cef32df0 pid: 250937 (default app)
+*** uWSGI is running in multiple interpreter mode ***
+spawned uWSGI master process (pid: 250937)
+spawned uWSGI worker 1 (pid: 250938, cores: 1)
+spawned uWSGI worker 2 (pid: 250939, cores: 1)
+spawned uWSGI worker 3 (pid: 250940, cores: 1)
+spawned uWSGI worker 4 (pid: 250941, cores: 1)
+SIGINT/SIGTERM received...killing workers...
+worker 1 buried after 1 seconds
+worker 2 buried after 1 seconds
+worker 3 buried after 1 seconds
+worker 4 buried after 1 seconds
+goodbye to uWSGI.
+VACUUM: unix socket /tmp/metasploitmcp.sock removed.
+*** Starting uWSGI 2.0.31 (64bit) on [Sat Nov 15 03:48:04 2025] ***
+compiled with version: 15.2.1 20250813 on 12 October 2025 14:43:31
+os: Linux-6.17.7-arch1-1 #1 SMP PREEMPT_DYNAMIC Sun, 02 Nov 2025 17:27:22 +0000
+nodename: devpen11-unknown
+machine: x86_64
+clock source: unix
+pcre jit disabled
+detected number of CPU cores: 4
+current working directory: /home/devpen11/Desktop/MetasploitMCP
+detected binary path: /usr/bin/uwsgi
+*** WARNING: you are running uWSGI without its master process manager ***
+your processes number limit is 15273
+your memory page size is 4096 bytes
+detected max file descriptor number: 1024
+lock engine: pthread robust mutexes
+thunder lock: disabled (you can enable it with --thunder-lock)
+uwsgi socket 0 bound to UNIX address /tmp/metasploitmcp.sock fd 3
+Python version: 3.13.7 (main, Aug 15 2025, 12:34:02) [GCC 15.2.1 20250813]
+Python main interpreter initialized at 0x7f3255f32df0
+python threads support enabled
+your server socket listen backlog is limited to 100 connections
+your mercy for graceful operations on workers is 60 seconds
+mapped 72920 bytes (71 KB) for 1 cores
+*** Operational MODE: single process ***
+Traceback (most recent call last):
+  File "/home/devpen11/Desktop/MetasploitMCP/app.py", line 3, in <module>
+    import nmap
+ModuleNotFoundError: No module named 'nmap'
+unable to load app 0 (mountpoint='') (callable not found or import error)
+*** no app loaded. going in full dynamic mode ***
+*** uWSGI is running in multiple interpreter mode ***
+spawned uWSGI worker 1 (and the only) (pid: 312479, cores: 1)
+*** Starting uWSGI 2.0.31 (64bit) on [Sat Nov 15 03:57:22 2025] ***
+compiled with version: 15.2.1 20250813 on 12 October 2025 14:43:31
+os: Linux-6.17.7-arch1-1 #1 SMP PREEMPT_DYNAMIC Sun, 02 Nov 2025 17:27:22 +0000
+nodename: devpen11-unknown
+machine: x86_64
+clock source: unix
+pcre jit disabled
+detected number of CPU cores: 4
+current working directory: /home/devpen11/Desktop/MetasploitMCP
+detected binary path: /usr/bin/uwsgi
+*** WARNING: you are running uWSGI without its master process manager ***
+your processes number limit is 15273
+your memory page size is 4096 bytes
+detected max file descriptor number: 1024
+lock engine: pthread robust mutexes
+thunder lock: disabled (you can enable it with --thunder-lock)
+uwsgi socket 0 bound to UNIX address /tmp/metasploitmcp.sock fd 3
+Python version: 3.13.7 (main, Aug 15 2025, 12:34:02) [GCC 15.2.1 20250813]
+Python main interpreter initialized at 0x7ff7e5b32df0
+python threads support enabled
+your server socket listen backlog is limited to 100 connections
+your mercy for graceful operations on workers is 60 seconds
+mapped 72920 bytes (71 KB) for 1 cores
+*** Operational MODE: single process ***
+Traceback (most recent call last):
+  File "/home/devpen11/Desktop/MetasploitMCP/app.py", line 3, in <module>
+    import nmap
+ModuleNotFoundError: No module named 'nmap'
+unable to load app 0 (mountpoint='') (callable not found or import error)
+*** no app loaded. going in full dynamic mode ***
+*** uWSGI is running in multiple interpreter mode ***
+spawned uWSGI worker 1 (and the only) (pid: 316825, cores: 1)
+*** Starting uWSGI 2.0.31 (64bit) on [Sat Nov 15 04:09:00 2025] ***
+compiled with version: 15.2.1 20250813 on 12 October 2025 14:43:31
+os: Linux-6.17.7-arch1-1 #1 SMP PREEMPT_DYNAMIC Sun, 02 Nov 2025 17:27:22 +0000
+nodename: devpen11-unknown
+machine: x86_64
+clock source: unix
+pcre jit disabled
+detected number of CPU cores: 4
+current working directory: /home/devpen11/Desktop/MetasploitMCP
+detected binary path: /usr/bin/uwsgi
+*** WARNING: you are running uWSGI without its master process manager ***
+your processes number limit is 15273
+your memory page size is 4096 bytes
+detected max file descriptor number: 1024
+lock engine: pthread robust mutexes
+thunder lock: disabled (you can enable it with --thunder-lock)
+uwsgi socket 0 bound to UNIX address /tmp/metasploitmcp.sock fd 3
+Python version: 3.13.7 (main, Aug 15 2025, 12:34:02) [GCC 15.2.1 20250813]
+PEP 405 virtualenv detected: /home/devpen11/venv
+Set PythonHome to /home/devpen11/venv
+Python main interpreter initialized at 0x7f351ef32df0
+python threads support enabled
+your server socket listen backlog is limited to 100 connections
+your mercy for graceful operations on workers is 60 seconds
+mapped 72920 bytes (71 KB) for 1 cores
+*** Operational MODE: single process ***
+Traceback (most recent call last):
+  File "/home/devpen11/Desktop/MetasploitMCP/app.py", line 2, in <module>
+    from flask import Flask, jsonify, request
+ModuleNotFoundError: No module named 'flask'
+unable to load app 0 (mountpoint='') (callable not found or import error)
+*** no app loaded. going in full dynamic mode ***
+*** uWSGI is running in multiple interpreter mode ***
+spawned uWSGI worker 1 (and the only) (pid: 321352, cores: 1)
+*** Starting uWSGI 2.0.31 (64bit) on [Sat Nov 15 04:12:35 2025] ***
+compiled with version: 15.2.1 20250813 on 12 October 2025 14:43:31
+os: Linux-6.17.7-arch1-1 #1 SMP PREEMPT_DYNAMIC Sun, 02 Nov 2025 17:27:22 +0000
+nodename: devpen11-unknown
+machine: x86_64
+clock source: unix
+pcre jit disabled
+detected number of CPU cores: 4
+current working directory: /home/devpen11/Desktop/MetasploitMCP
+detected binary path: /usr/bin/uwsgi
+*** WARNING: you are running uWSGI without its master process manager ***
+your processes number limit is 15273
+your memory page size is 4096 bytes
+detected max file descriptor number: 1024
+lock engine: pthread robust mutexes
+thunder lock: disabled (you can enable it with --thunder-lock)
+uwsgi socket 0 bound to UNIX address /tmp/metasploitmcp.sock fd 3
+Python version: 3.13.7 (main, Aug 15 2025, 12:34:02) [GCC 15.2.1 20250813]
+PEP 405 virtualenv detected: /home/devpen11/venv
+Set PythonHome to /home/devpen11/venv
+Python main interpreter initialized at 0x7f448ad32df0
+python threads support enabled
+your server socket listen backlog is limited to 100 connections
+your mercy for graceful operations on workers is 60 seconds
+mapped 72920 bytes (71 KB) for 1 cores
+*** Operational MODE: single process ***
+WSGI app 0 (mountpoint='') ready in 2 seconds on interpreter 0x7f448ad32df0 pid: 324782 (default app)
+*** uWSGI is running in multiple interpreter mode ***
+spawned uWSGI worker 1 (and the only) (pid: 324782, cores: 1)
+*** Starting uWSGI 2.0.31 (64bit) on [Sat Nov 15 04:21:14 2025] ***
+compiled with version: 15.2.1 20250813 on 12 October 2025 14:43:31
+os: Linux-6.17.7-arch1-1 #1 SMP PREEMPT_DYNAMIC Sun, 02 Nov 2025 17:27:22 +0000
+nodename: devpen11-unknown
+machine: x86_64
+clock source: unix
+pcre jit disabled
+detected number of CPU cores: 4
+current working directory: /home/devpen11/Desktop/MetasploitMCP
+detected binary path: /usr/bin/uwsgi
+*** WARNING: you are running uWSGI without its master process manager ***
+your processes number limit is 15273
+your memory page size is 4096 bytes
+detected max file descriptor number: 1024
+lock engine: pthread robust mutexes
+thunder lock: disabled (you can enable it with --thunder-lock)
+uwsgi socket 0 bound to UNIX address /tmp/metasploitmcp.sock fd 3
+Python version: 3.13.7 (main, Aug 15 2025, 12:34:02) [GCC 15.2.1 20250813]
+PEP 405 virtualenv detected: /home/devpen11/venv
+Set PythonHome to /home/devpen11/venv
+Python main interpreter initialized at 0x7fe66b732df0
+python threads support enabled
+your server socket listen backlog is limited to 100 connections
+your mercy for graceful operations on workers is 60 seconds
+mapped 72920 bytes (71 KB) for 1 cores
+*** Operational MODE: single process ***
+WSGI app 0 (mountpoint='') ready in 1 seconds on interpreter 0x7fe66b732df0 pid: 332155 (default app)
+*** uWSGI is running in multiple interpreter mode ***
+spawned uWSGI worker 1 (and the only) (pid: 332155, cores: 1)
+*** Starting uWSGI 2.0.31 (64bit) on [Sat Nov 15 04:25:47 2025] ***
+compiled with version: 15.2.1 20250813 on 12 October 2025 14:43:31
+os: Linux-6.17.7-arch1-1 #1 SMP PREEMPT_DYNAMIC Sun, 02 Nov 2025 17:27:22 +0000
+nodename: devpen11-unknown
+machine: x86_64
+clock source: unix
+pcre jit disabled
+detected number of CPU cores: 4
+current working directory: /home/devpen11/Desktop/MetasploitMCP
+detected binary path: /usr/bin/uwsgi
+*** WARNING: you are running uWSGI without its master process manager ***
+your processes number limit is 15273
+your memory page size is 4096 bytes
+detected max file descriptor number: 1024
+lock engine: pthread robust mutexes
+thunder lock: disabled (you can enable it with --thunder-lock)
+uwsgi socket 0 bound to UNIX address /tmp/metasploitmcp.sock fd 3
+Python version: 3.13.7 (main, Aug 15 2025, 12:34:02) [GCC 15.2.1 20250813]
+PEP 405 virtualenv detected: /home/devpen11/venv
+Set PythonHome to /home/devpen11/venv
+Python main interpreter initialized at 0x7f02abb32df0
+python threads support enabled
+your server socket listen backlog is limited to 100 connections
+your mercy for graceful operations on workers is 60 seconds
+mapped 72920 bytes (71 KB) for 1 cores
+*** Operational MODE: single process ***
+WSGI app 0 (mountpoint='') ready in 1 seconds on interpreter 0x7f02abb32df0 pid: 335599 (default app)
+*** uWSGI is running in multiple interpreter mode ***
+spawned uWSGI worker 1 (and the only) (pid: 335599, cores: 1)
+*** Starting uWSGI 2.0.31 (64bit) on [Sat Nov 15 04:26:30 2025] ***
+compiled with version: 15.2.1 20250813 on 12 October 2025 14:43:31
+os: Linux-6.17.7-arch1-1 #1 SMP PREEMPT_DYNAMIC Sun, 02 Nov 2025 17:27:22 +0000
+nodename: devpen11-unknown
+machine: x86_64
+clock source: unix
+pcre jit disabled
+detected number of CPU cores: 4
+current working directory: /home/devpen11/Desktop/MetasploitMCP
+detected binary path: /usr/bin/uwsgi
+*** WARNING: you are running uWSGI without its master process manager ***
+your processes number limit is 15273
+your memory page size is 4096 bytes
+detected max file descriptor number: 1024
+lock engine: pthread robust mutexes
+thunder lock: disabled (you can enable it with --thunder-lock)
+uwsgi socket 0 bound to UNIX address /tmp/metasploitmcp.sock fd 3
+Python version: 3.13.7 (main, Aug 15 2025, 12:34:02) [GCC 15.2.1 20250813]
+PEP 405 virtualenv detected: /home/devpen11/venv
+Set PythonHome to /home/devpen11/venv
+Python main interpreter initialized at 0x7f845e532df0
+python threads support enabled
+your server socket listen backlog is limited to 100 connections
+your mercy for graceful operations on workers is 60 seconds
+mapped 72920 bytes (71 KB) for 1 cores
+*** Operational MODE: single process ***
+WSGI app 0 (mountpoint='') ready in 1 seconds on interpreter 0x7f845e532df0 pid: 336440 (default app)
+*** uWSGI is running in multiple interpreter mode ***
+spawned uWSGI worker 1 (and the only) (pid: 336440, cores: 1)
+*** Starting uWSGI 2.0.31 (64bit) on [Sat Nov 15 04:29:52 2025] ***
+compiled with version: 15.2.1 20250813 on 12 October 2025 14:43:31
+os: Linux-6.17.7-arch1-1 #1 SMP PREEMPT_DYNAMIC Sun, 02 Nov 2025 17:27:22 +0000
+nodename: devpen11-unknown
+machine: x86_64
+clock source: unix
+pcre jit disabled
+detected number of CPU cores: 4
+current working directory: /home/devpen11/Desktop/MetasploitMCP
+detected binary path: /usr/bin/uwsgi
+*** WARNING: you are running uWSGI without its master process manager ***
+your processes number limit is 15273
+your memory page size is 4096 bytes
+detected max file descriptor number: 1024
+lock engine: pthread robust mutexes
+thunder lock: disabled (you can enable it with --thunder-lock)
+uwsgi socket 0 bound to TCP address 127.0.0.1:9090 fd 3
+Python version: 3.13.7 (main, Aug 15 2025, 12:34:02) [GCC 15.2.1 20250813]
+PEP 405 virtualenv detected: /home/devpen11/venv
+Set PythonHome to /home/devpen11/venv
+Python main interpreter initialized at 0x7fbea7532df0
+python threads support enabled
+your server socket listen backlog is limited to 100 connections
+your mercy for graceful operations on workers is 60 seconds
+mapped 72920 bytes (71 KB) for 1 cores
+*** Operational MODE: single process ***
+WSGI app 0 (mountpoint='') ready in 1 seconds on interpreter 0x7fbea7532df0 pid: 338432 (default app)
+*** uWSGI is running in multiple interpreter mode ***
+spawned uWSGI worker 1 (and the only) (pid: 338432, cores: 1)
+[pid: 338432|app: 0|req: 1/1] 127.0.0.1 () {32 vars in 332 bytes} [Sat Nov 15 04:29:54 2025] GET / => generated 207 bytes in 1 msecs (HTTP/1.1 404) 2 headers in 87 bytes (1 switches on core 0)
+2025-11-15 04:31:57,132 INFO Will scan networks (iface -> network): [('wlan0', '10.0.0.0/24'), ('wlan1', '10.0.0.0/24')]
+2025-11-15 04:31:57,132 INFO Running nmap ARP/ping sweep on wlan0 (10.0.0.0/24) with args: -sn -PR -e wlan0
+2025-11-15 04:32:06,339 INFO Running nmap ARP/ping sweep on wlan1 (10.0.0.0/24) with args: -sn -PR -e wlan1
+2025-11-15 04:32:09,146 INFO Local IPs: {'127.0.0.1', '10.0.0.62', '10.0.0.216'}
+2025-11-15 04:34:57,190 INFO Skipping local IP 10.0.0.216
+2025-11-15 04:35:17,797 INFO Skipping local IP 10.0.0.62
+[pid: 338432|app: 0|req: 2/2] 127.0.0.1 () {32 vars in 356 bytes} [Sat Nov 15 04:31:56 2025] GET /list_targets => generated 1104 bytes in 201119 msecs (HTTP/1.1 200) 2 headers in 73 bytes (1 switches on core 0)
+[pid: 338432|app: 0|req: 3/3] 127.0.0.1 () {36 vars in 423 bytes} [Sat Nov 15 04:35:17 2025] POST /launch => generated 33 bytes in 0 msecs (HTTP/1.1 400) 2 headers in 80 bytes (1 switches on core 0)
+[pid: 338432|app: 0|req: 4/4] 127.0.0.1 () {36 vars in 423 bytes} [Sat Nov 15 04:35:17 2025] POST /launch => generated 33 bytes in 0 msecs (HTTP/1.1 400) 2 headers in 80 bytes (1 switches on core 0)
+2025-11-15 04:35:17,823 INFO Will scan networks (iface -> network): [('wlan0', '10.0.0.0/24'), ('wlan1', '10.0.0.0/24')]
+2025-11-15 04:35:17,823 INFO Running nmap ARP/ping sweep on wlan0 (10.0.0.0/24) with args: -sn -PR -e wlan0
+2025-11-15 04:35:35,344 INFO Running nmap ARP/ping sweep on wlan1 (10.0.0.0/24) with args: -sn -PR -e wlan1
+2025-11-15 04:35:38,271 INFO Local IPs: {'127.0.0.1', '10.0.0.62', '10.0.0.216'}
+2025-11-15 04:38:20,355 INFO Skipping local IP 10.0.0.216
+2025-11-15 04:38:38,724 INFO Skipping local IP 10.0.0.62
+[pid: 338432|app: 0|req: 5/5] 127.0.0.1 () {32 vars in 356 bytes} [Sat Nov 15 04:35:17 2025] GET /list_targets => generated 1105 bytes in 200925 msecs (HTTP/1.1 200) 2 headers in 73 bytes (1 switches on core 0)
+2025-11-15 04:38:38,751 INFO Will scan networks (iface -> network): [('wlan0', '10.0.0.0/24'), ('wlan1', '10.0.0.0/24')]
+2025-11-15 04:38:38,752 INFO Running nmap ARP/ping sweep on wlan0 (10.0.0.0/24) with args: -sn -PR -e wlan0
+2025-11-15 04:38:42,300 INFO Running nmap ARP/ping sweep on wlan1 (10.0.0.0/24) with args: -sn -PR -e wlan1
+2025-11-15 04:38:47,740 INFO Local IPs: {'127.0.0.1', '10.0.0.62', '10.0.0.216'}
+2025-11-15 04:41:28,479 INFO Skipping local IP 10.0.0.216
+2025-11-15 04:41:46,681 INFO Skipping local IP 10.0.0.62
+[pid: 338432|app: 0|req: 6/6] 127.0.0.1 () {32 vars in 356 bytes} [Sat Nov 15 04:38:38 2025] GET /list_targets => generated 1105 bytes in 187956 msecs (HTTP/1.1 200) 2 headers in 73 bytes (1 switches on core 0)
+2025-11-15 04:41:46,713 INFO Will scan networks (iface -> network): [('wlan0', '10.0.0.0/24'), ('wlan1', '10.0.0.0/24')]
+2025-11-15 04:41:46,714 INFO Running nmap ARP/ping sweep on wlan0 (10.0.0.0/24) with args: -sn -PR -e wlan0
+2025-11-15 04:41:51,094 INFO Running nmap ARP/ping sweep on wlan1 (10.0.0.0/24) with args: -sn -PR -e wlan1
+2025-11-15 04:41:54,165 INFO Local IPs: {'127.0.0.1', '10.0.0.62', '10.0.0.216'}
+2025-11-15 04:44:34,039 INFO Skipping local IP 10.0.0.216
+2025-11-15 04:44:53,465 INFO Skipping local IP 10.0.0.62
+[pid: 338432|app: 0|req: 7/7] 127.0.0.1 () {32 vars in 356 bytes} [Sat Nov 15 04:41:46 2025] GET /list_targets => generated 1105 bytes in 186784 msecs (HTTP/1.1 200) 2 headers in 73 bytes (1 switches on core 0)
+2025-11-15 04:44:53,494 INFO Will scan networks (iface -> network): [('wlan0', '10.0.0.0/24'), ('wlan1', '10.0.0.0/24')]
+2025-11-15 04:44:53,495 INFO Running nmap ARP/ping sweep on wlan0 (10.0.0.0/24) with args: -sn -PR -e wlan0
+2025-11-15 04:44:57,198 INFO Running nmap ARP/ping sweep on wlan1 (10.0.0.0/24) with args: -sn -PR -e wlan1
+2025-11-15 04:45:00,265 INFO Local IPs: {'127.0.0.1', '10.0.0.62', '10.0.0.216'}
+2025-11-15 04:47:40,488 INFO Skipping local IP 10.0.0.216
+2025-11-15 04:47:59,131 INFO Skipping local IP 10.0.0.62
+[pid: 338432|app: 0|req: 8/8] 127.0.0.1 () {32 vars in 356 bytes} [Sat Nov 15 04:44:53 2025] GET /list_targets => generated 1105 bytes in 185665 msecs (HTTP/1.1 200) 2 headers in 73 bytes (1 switches on core 0)
+2025-11-15 04:47:59,157 INFO Will scan networks (iface -> network): [('wlan0', '10.0.0.0/24'), ('wlan1', '10.0.0.0/24')]
+2025-11-15 04:47:59,158 INFO Running nmap ARP/ping sweep on wlan0 (10.0.0.0/24) with args: -sn -PR -e wlan0
+2025-11-15 04:48:02,842 INFO Running nmap ARP/ping sweep on wlan1 (10.0.0.0/24) with args: -sn -PR -e wlan1
+2025-11-15 04:48:05,676 INFO Local IPs: {'127.0.0.1', '10.0.0.62', '10.0.0.216'}
+2025-11-15 04:50:45,272 INFO Skipping local IP 10.0.0.216
+2025-11-15 04:51:03,337 INFO Skipping local IP 10.0.0.62
+[pid: 338432|app: 0|req: 9/9] 127.0.0.1 () {32 vars in 356 bytes} [Sat Nov 15 04:47:59 2025] GET /list_targets => generated 1105 bytes in 184206 msecs (HTTP/1.1 200) 2 headers in 73 bytes (1 switches on core 0)
+[pid: 338432|app: 0|req: 10/10] 127.0.0.1 () {54 vars in 795 bytes} [Sat Nov 15 04:51:03 2025] GET / => generated 207 bytes in 2 msecs (HTTP/1.1 404) 2 headers in 87 bytes (1 switches on core 0)
+[pid: 338432|app: 0|req: 11/11] 127.0.0.1 () {50 vars in 742 bytes} [Sat Nov 15 04:51:03 2025] GET / => generated 207 bytes in 1 msecs (HTTP/1.1 404) 2 headers in 87 bytes (1 switches on core 0)
+[pid: 338432|app: 0|req: 12/12] 127.0.0.1 () {54 vars in 795 bytes} [Sat Nov 15 04:51:03 2025] GET / => generated 207 bytes in 1 msecs (HTTP/1.1 404) 2 headers in 87 bytes (1 switches on core 0)
+[pid: 338432|app: 0|req: 13/13] 127.0.0.1 () {52 vars in 796 bytes} [Sat Nov 15 04:51:03 2025] GET /favicon.ico => generated 207 bytes in 1 msecs (HTTP/1.1 404) 2 headers in 87 bytes (1 switches on core 0)
+[pid: 338432|app: 0|req: 14/14] 127.0.0.1 () {32 vars in 332 bytes} [Sat Nov 15 04:59:53 2025] GET / => generated 207 bytes in 1 msecs (HTTP/1.1 404) 2 headers in 87 bytes (1 switches on core 0)
+*** Starting uWSGI 2.0.31 (64bit) on [Sat Nov 15 05:00:24 2025] ***
+compiled with version: 15.2.1 20250813 on 12 October 2025 14:43:31
+os: Linux-6.17.7-arch1-1 #1 SMP PREEMPT_DYNAMIC Sun, 02 Nov 2025 17:27:22 +0000
+nodename: devpen11-unknown
+machine: x86_64
+clock source: unix
+pcre jit disabled
+detected number of CPU cores: 4
+current working directory: /home/devpen11/Desktop/MetasploitMCP
+detected binary path: /usr/bin/uwsgi
+*** WARNING: you are running uWSGI without its master process manager ***
+your processes number limit is 15273
+your memory page size is 4096 bytes
+detected max file descriptor number: 1024
+lock engine: pthread robust mutexes
+thunder lock: disabled (you can enable it with --thunder-lock)
+uwsgi socket 0 bound to TCP address 127.0.0.1:9090 fd 3
+Python version: 3.13.7 (main, Aug 15 2025, 12:34:02) [GCC 15.2.1 20250813]
+PEP 405 virtualenv detected: /home/devpen11/venv
+Set PythonHome to /home/devpen11/venv
+Python main interpreter initialized at 0x7f00a4d32df0
+python threads support enabled
+your server socket listen backlog is limited to 100 connections
+your mercy for graceful operations on workers is 60 seconds
+mapped 72920 bytes (71 KB) for 1 cores
+*** Operational MODE: single process ***
+WSGI app 0 (mountpoint='') ready in 2 seconds on interpreter 0x7f00a4d32df0 pid: 350976 (default app)
+*** uWSGI is running in multiple interpreter mode ***
+spawned uWSGI worker 1 (and the only) (pid: 350976, cores: 1)
+[pid: 350976|app: 0|req: 1/1] 127.0.0.1 () {32 vars in 332 bytes} [Sat Nov 15 05:00:50 2025] GET / => generated 207 bytes in 1 msecs (HTTP/1.1 404) 2 headers in 87 bytes (1 switches on core 0)
+*** Starting uWSGI 2.0.31 (64bit) on [Sat Nov 15 05:03:28 2025] ***
+compiled with version: 15.2.1 20250813 on 12 October 2025 14:43:31
+os: Linux-6.17.7-arch1-1 #1 SMP PREEMPT_DYNAMIC Sun, 02 Nov 2025 17:27:22 +0000
+nodename: devpen11-unknown
+machine: x86_64
+clock source: unix
+pcre jit disabled
+detected number of CPU cores: 4
+current working directory: /home/devpen11/Desktop/MetasploitMCP
+detected binary path: /usr/bin/uwsgi
+*** WARNING: you are running uWSGI without its master process manager ***
+your processes number limit is 15273
+your memory page size is 4096 bytes
+detected max file descriptor number: 1024
+lock engine: pthread robust mutexes
+thunder lock: disabled (you can enable it with --thunder-lock)
+uwsgi socket 0 bound to TCP address 127.0.0.1:9090 fd 3
+Python version: 3.13.7 (main, Aug 15 2025, 12:34:02) [GCC 15.2.1 20250813]
+PEP 405 virtualenv detected: /home/devpen11/venv
+Set PythonHome to /home/devpen11/venv
+Python main interpreter initialized at 0x7f5258732df0
+python threads support enabled
+your server socket listen backlog is limited to 100 connections
+your mercy for graceful operations on workers is 60 seconds
+mapped 72920 bytes (71 KB) for 1 cores
+*** Operational MODE: single process ***
+WSGI app 0 (mountpoint='') ready in 2 seconds on interpreter 0x7f5258732df0 pid: 352122 (default app)
+*** uWSGI is running in multiple interpreter mode ***
+spawned uWSGI worker 1 (and the only) (pid: 352122, cores: 1)
+[pid: 352122|app: 0|req: 1/1] 127.0.0.1 () {32 vars in 332 bytes} [Sat Nov 15 05:03:34 2025] GET / => generated 166 bytes in 0 msecs (HTTP/1.1 200) 2 headers in 72 bytes (1 switches on core 0)
+[pid: 352122|app: 0|req: 2/2] 127.0.0.1 () {54 vars in 941 bytes} [Sat Nov 15 05:03:57 2025] GET / => generated 166 bytes in 0 msecs (HTTP/1.1 200) 2 headers in 72 bytes (1 switches on core 0)
+[pid: 352122|app: 0|req: 3/3] 127.0.0.1 () {52 vars in 868 bytes} [Sat Nov 15 05:03:59 2025] GET /favicon.ico => generated 207 bytes in 0 msecs (HTTP/1.1 404) 2 headers in 87 bytes (1 switches on core 0)
+[pid: 352122|app: 0|req: 4/4] 127.0.0.1 () {50 vars in 742 bytes} [Sat Nov 15 05:04:36 2025] GET / => generated 166 bytes in 0 msecs (HTTP/1.1 200) 2 headers in 72 bytes (1 switches on core 0)
+[pid: 352122|app: 0|req: 5/5] 127.0.0.1 () {48 vars in 742 bytes} [Sat Nov 15 05:04:37 2025] GET /favicon.ico => generated 207 bytes in 1 msecs (HTTP/1.1 404) 2 headers in 87 bytes (1 switches on core 0)
+2025-11-15 05:06:46,943 INFO Will scan networks (iface -> network): [('wlan0', '10.0.0.0/24'), ('wlan1', '10.0.0.0/24')]
+2025-11-15 05:06:46,966 INFO Running nmap ARP/ping sweep on wlan0 (10.0.0.0/24) with args: -sn -PR -e wlan0
+2025-11-15 05:06:51,023 INFO Running nmap ARP/ping sweep on wlan1 (10.0.0.0/24) with args: -sn -PR -e wlan1
+2025-11-15 05:06:54,512 INFO Local IPs: {'127.0.0.1', '10.0.0.216', '10.0.0.62'}
+2025-11-15 05:09:34,349 INFO Skipping local IP 10.0.0.216
+2025-11-15 05:09:53,770 INFO Skipping local IP 10.0.0.62
+[pid: 352122|app: 0|req: 6/6] 127.0.0.1 () {32 vars in 356 bytes} [Sat Nov 15 05:06:46 2025] GET /list_targets => generated 1105 bytes in 186854 msecs (HTTP/1.1 200) 2 headers in 73 bytes (1 switches on core 0)
+[pid: 352122|app: 0|req: 7/7] 127.0.0.1 () {50 vars in 742 bytes} [Sat Nov 15 05:09:53 2025] GET / => generated 166 bytes in 1 msecs (HTTP/1.1 200) 2 headers in 72 bytes (1 switches on core 0)
+[pid: 352122|app: 0|req: 8/8] 127.0.0.1 () {48 vars in 742 bytes} [Sat Nov 15 05:09:53 2025] GET /favicon.ico => generated 207 bytes in 0 msecs (HTTP/1.1 404) 2 headers in 87 bytes (1 switches on core 0)
+*** Starting uWSGI 2.0.31 (64bit) on [Sat Nov 15 05:10:43 2025] ***
+compiled with version: 15.2.1 20250813 on 12 October 2025 14:43:31
+os: Linux-6.17.7-arch1-1 #1 SMP PREEMPT_DYNAMIC Sun, 02 Nov 2025 17:27:22 +0000
+nodename: devpen11-unknown
+machine: x86_64
+clock source: unix
+pcre jit disabled
+detected number of CPU cores: 4
+current working directory: /home/devpen11/Desktop/MetasploitMCP
+detected binary path: /usr/bin/uwsgi
+*** WARNING: you are running uWSGI without its master process manager ***
+your processes number limit is 15273
+your memory page size is 4096 bytes
+detected max file descriptor number: 1024
+lock engine: pthread robust mutexes
+thunder lock: disabled (you can enable it with --thunder-lock)
+uwsgi socket 0 bound to TCP address 127.0.0.1:9090 fd 3
+Python version: 3.13.7 (main, Aug 15 2025, 12:34:02) [GCC 15.2.1 20250813]
+PEP 405 virtualenv detected: /home/devpen11/venv
+Set PythonHome to /home/devpen11/venv
+Python main interpreter initialized at 0x7f9b92f32df0
+python threads support enabled
+your server socket listen backlog is limited to 100 connections
+your mercy for graceful operations on workers is 60 seconds
+mapped 72920 bytes (71 KB) for 1 cores
+*** Operational MODE: single process ***
+WSGI app 0 (mountpoint='') ready in 1 seconds on interpreter 0x7f9b92f32df0 pid: 354469 (default app)
+*** uWSGI is running in multiple interpreter mode ***
+spawned uWSGI worker 1 (and the only) (pid: 354469, cores: 1)
+[pid: 354469|app: 0|req: 1/1] 127.0.0.1 () {50 vars in 742 bytes} [Sat Nov 15 05:10:56 2025] GET / => generated 166 bytes in 1 msecs (HTTP/1.1 200) 2 headers in 72 bytes (1 switches on core 0)
+[pid: 354469|app: 0|req: 2/2] 127.0.0.1 () {48 vars in 742 bytes} [Sat Nov 15 05:10:56 2025] GET /favicon.ico => generated 207 bytes in 2 msecs (HTTP/1.1 404) 2 headers in 87 bytes (1 switches on core 0)
+[pid: 354469|app: 0|req: 3/3] 127.0.0.1 () {50 vars in 742 bytes} [Sat Nov 15 05:10:58 2025] GET / => generated 166 bytes in 1 msecs (HTTP/1.1 200) 2 headers in 72 bytes (1 switches on core 0)
+[pid: 354469|app: 0|req: 4/4] 127.0.0.1 () {48 vars in 742 bytes} [Sat Nov 15 05:10:59 2025] GET /favicon.ico => generated 207 bytes in 1 msecs (HTTP/1.1 404) 2 headers in 87 bytes (1 switches on core 0)
+[pid: 354469|app: 0|req: 5/5] 127.0.0.1 () {54 vars in 795 bytes} [Sat Nov 15 05:11:02 2025] GET / => generated 166 bytes in 1 msecs (HTTP/1.1 200) 2 headers in 72 bytes (1 switches on core 0)
+[pid: 354469|app: 0|req: 6/6] 127.0.0.1 () {52 vars in 795 bytes} [Sat Nov 15 05:11:02 2025] GET /favicon.ico => generated 207 bytes in 1 msecs (HTTP/1.1 404) 2 headers in 87 bytes (1 switches on core 0)
+*** Starting uWSGI 2.0.31 (64bit) on [Sat Nov 15 05:11:24 2025] ***
+compiled with version: 15.2.1 20250813 on 12 October 2025 14:43:31
+os: Linux-6.17.7-arch1-1 #1 SMP PREEMPT_DYNAMIC Sun, 02 Nov 2025 17:27:22 +0000
+nodename: devpen11-unknown
+machine: x86_64
+clock source: unix
+pcre jit disabled
+detected number of CPU cores: 4
+current working directory: /home/devpen11/Desktop/MetasploitMCP
+detected binary path: /usr/bin/uwsgi
+*** WARNING: you are running uWSGI without its master process manager ***
+your processes number limit is 15273
+your memory page size is 4096 bytes
+detected max file descriptor number: 1024
+lock engine: pthread robust mutexes
+thunder lock: disabled (you can enable it with --thunder-lock)
+uwsgi socket 0 bound to TCP address 127.0.0.1:9090 fd 3
+Python version: 3.13.7 (main, Aug 15 2025, 12:34:02) [GCC 15.2.1 20250813]
+PEP 405 virtualenv detected: /home/devpen11/venv
+Set PythonHome to /home/devpen11/venv
+Python main interpreter initialized at 0x7f963b732df0
+python threads support enabled
+your server socket listen backlog is limited to 100 connections
+your mercy for graceful operations on workers is 60 seconds
+mapped 72920 bytes (71 KB) for 1 cores
+*** Operational MODE: single process ***
+WSGI app 0 (mountpoint='') ready in 1 seconds on interpreter 0x7f963b732df0 pid: 354547 (default app)
+*** uWSGI is running in multiple interpreter mode ***
+spawned uWSGI worker 1 (and the only) (pid: 354547, cores: 1)
+[pid: 354547|app: 0|req: 1/1] 127.0.0.1 () {50 vars in 742 bytes} [Sat Nov 15 05:11:33 2025] GET / => generated 166 bytes in 1 msecs (HTTP/1.1 200) 2 headers in 72 bytes (1 switches on core 0)
+[pid: 354547|app: 0|req: 2/2] 127.0.0.1 () {48 vars in 742 bytes} [Sat Nov 15 05:11:33 2025] GET /favicon.ico => generated 207 bytes in 3 msecs (HTTP/1.1 404) 2 headers in 87 bytes (1 switches on core 0)
+[pid: 354547|app: 0|req: 3/3] 127.0.0.1 () {50 vars in 756 bytes} [Sat Nov 15 05:12:35 2025] GET /console => generated 3234 bytes in 0 msecs (HTTP/1.1 200) 2 headers in 81 bytes (1 switches on core 0)
+[pid: 354547|app: 0|req: 4/4] 127.0.0.1 () {48 vars in 750 bytes} [Sat Nov 15 05:12:35 2025] GET /favicon.ico => generated 207 bytes in 1 msecs (HTTP/1.1 404) 2 headers in 87 bytes (1 switches on core 0)
+2025-11-15 05:12:42,126 INFO Will scan networks (iface -> network): [('wlan0', '10.0.0.0/24'), ('wlan1', '10.0.0.0/24')]
+2025-11-15 05:12:42,127 INFO Running nmap ARP/ping sweep on wlan0 (10.0.0.0/24) with args: -sn -PR -e wlan0
+2025-11-15 05:12:44,996 INFO Running nmap ARP/ping sweep on wlan1 (10.0.0.0/24) with args: -sn -PR -e wlan1
+2025-11-15 05:12:47,881 INFO Local IPs: {'10.0.0.216', '127.0.0.1', '10.0.0.62'}
+2025-11-15 05:15:27,146 INFO Skipping local IP 10.0.0.216
+2025-11-15 05:15:45,671 INFO Skipping local IP 10.0.0.62
+[pid: 354547|app: 0|req: 5/5] 127.0.0.1 () {48 vars in 683 bytes} [Sat Nov 15 05:12:42 2025] GET /list_targets => generated 1105 bytes in 183576 msecs (HTTP/1.1 200) 2 headers in 73 bytes (1 switches on core 0)
+*** Starting uWSGI 2.0.31 (64bit) on [Sat Nov 15 05:24:43 2025] ***
+compiled with version: 15.2.1 20250813 on 12 October 2025 14:43:31
+os: Linux-6.17.7-arch1-1 #1 SMP PREEMPT_DYNAMIC Sun, 02 Nov 2025 17:27:22 +0000
+nodename: devpen11-unknown
+machine: x86_64
+clock source: unix
+pcre jit disabled
+detected number of CPU cores: 4
+current working directory: /home/devpen11/Desktop/MetasploitMCP
+detected binary path: /usr/bin/uwsgi
+*** WARNING: you are running uWSGI without its master process manager ***
+your processes number limit is 15273
+your memory page size is 4096 bytes
+detected max file descriptor number: 1024
+lock engine: pthread robust mutexes
+thunder lock: disabled (you can enable it with --thunder-lock)
+uwsgi socket 0 bound to TCP address 127.0.0.1:9090 fd 3
+Python version: 3.13.7 (main, Aug 15 2025, 12:34:02) [GCC 15.2.1 20250813]
+PEP 405 virtualenv detected: /home/devpen11/venv
+Set PythonHome to /home/devpen11/venv
+Python main interpreter initialized at 0x7f8f91732df0
+python threads support enabled
+your server socket listen backlog is limited to 100 connections
+your mercy for graceful operations on workers is 60 seconds
+mapped 72920 bytes (71 KB) for 1 cores
+*** Operational MODE: single process ***
+WSGI app 0 (mountpoint='') ready in 1 seconds on interpreter 0x7f8f91732df0 pid: 359290 (default app)
+*** uWSGI is running in multiple interpreter mode ***
+spawned uWSGI worker 1 (and the only) (pid: 359290, cores: 1)
+[pid: 359290|app: 0|req: 1/1] 127.0.0.1 () {50 vars in 756 bytes} [Sat Nov 15 05:25:08 2025] GET /console => generated 17179 bytes in 3 msecs (HTTP/1.1 200) 2 headers in 82 bytes (1 switches on core 0)
+[pid: 359290|app: 0|req: 2/2] 127.0.0.1 () {48 vars in 750 bytes} [Sat Nov 15 05:25:08 2025] GET /favicon.ico => generated 207 bytes in 1 msecs (HTTP/1.1 404) 2 headers in 87 bytes (1 switches on core 0)
+2025-11-15 05:25:36,207 INFO Will scan networks (iface -> network): [('wlan0', '10.0.0.0/24'), ('wlan1', '10.0.0.0/24')]
+2025-11-15 05:25:36,207 INFO Running nmap ARP/ping sweep on wlan0 (10.0.0.0/24) with args: -sn -PR -e wlan0
+2025-11-15 05:25:39,721 INFO Running nmap ARP/ping sweep on wlan1 (10.0.0.0/24) with args: -sn -PR -e wlan1
+2025-11-15 05:25:42,859 INFO Local IPs: {'127.0.0.1', '10.0.0.216', '10.0.0.62'}
+[pid: 359290|app: 0|req: 3/3] 127.0.0.1 () {48 vars in 683 bytes} [Sat Nov 15 05:25:36 2025] GET /list_targets => generated 15 bytes in 6660 msecs (HTTP/1.1 200) 2 headers in 71 bytes (1 switches on core 0)
+2025-11-15 05:25:52,112 INFO Will scan networks (iface -> network): [('wlan0', '10.0.0.0/24'), ('wlan1', '10.0.0.0/24')]
+2025-11-15 05:25:52,112 INFO Running nmap ARP/ping sweep on wlan0 (10.0.0.0/24) with args: -sn -PR -e wlan0
+2025-11-15 05:25:55,264 INFO Running nmap ARP/ping sweep on wlan1 (10.0.0.0/24) with args: -sn -PR -e wlan1
+2025-11-15 05:25:58,267 INFO Local IPs: {'127.0.0.1', '10.0.0.216', '10.0.0.62'}
+[pid: 359290|app: 0|req: 4/4] 127.0.0.1 () {48 vars in 683 bytes} [Sat Nov 15 05:25:52 2025] GET /list_targets => generated 15 bytes in 6160 msecs (HTTP/1.1 200) 2 headers in 71 bytes (1 switches on core 0)
+2025-11-15 05:25:58,273 INFO Will scan networks (iface -> network): [('wlan0', '10.0.0.0/24'), ('wlan1', '10.0.0.0/24')]
+2025-11-15 05:25:58,274 INFO Running nmap ARP/ping sweep on wlan0 (10.0.0.0/24) with args: -sn -PR -e wlan0
+2025-11-15 05:26:01,825 INFO Running nmap ARP/ping sweep on wlan1 (10.0.0.0/24) with args: -sn -PR -e wlan1
+2025-11-15 05:26:04,943 INFO Local IPs: {'127.0.0.1', '10.0.0.216', '10.0.0.62'}
+[pid: 359290|app: 0|req: 5/5] 127.0.0.1 () {48 vars in 683 bytes} [Sat Nov 15 05:25:58 2025] GET /list_targets => generated 15 bytes in 6676 msecs (HTTP/1.1 200) 2 headers in 71 bytes (1 switches on core 0)
+2025-11-15 05:26:12,649 INFO Will scan networks (iface -> network): [('wlan0', '10.0.0.0/24'), ('wlan1', '10.0.0.0/24')]
+2025-11-15 05:26:12,650 INFO Running nmap ARP/ping sweep on wlan0 (10.0.0.0/24) with args: -sn -PR -e wlan0
+2025-11-15 05:26:19,652 INFO Running nmap ARP/ping sweep on wlan1 (10.0.0.0/24) with args: -sn -PR -e wlan1
+2025-11-15 05:26:22,073 INFO Local IPs: {'127.0.0.1', '10.0.0.216', '10.0.0.62'}
+[pid: 359290|app: 0|req: 6/6] 127.0.0.1 () {48 vars in 683 bytes} [Sat Nov 15 05:26:12 2025] GET /list_targets => generated 15 bytes in 9428 msecs (HTTP/1.1 200) 2 headers in 71 bytes (1 switches on core 0)
+2025-11-15 05:26:22,080 INFO Will scan networks (iface -> network): [('wlan0', '10.0.0.0/24'), ('wlan1', '10.0.0.0/24')]
+2025-11-15 05:26:22,080 INFO Running nmap ARP/ping sweep on wlan0 (10.0.0.0/24) with args: -sn -PR -e wlan0
+2025-11-15 05:26:25,741 INFO Running nmap ARP/ping sweep on wlan1 (10.0.0.0/24) with args: -sn -PR -e wlan1
+2025-11-15 05:26:28,350 INFO Local IPs: {'127.0.0.1', '10.0.0.216', '10.0.0.62'}
+[pid: 359290|app: 0|req: 7/7] 127.0.0.1 () {48 vars in 683 bytes} [Sat Nov 15 05:26:22 2025] GET /list_targets => generated 15 bytes in 6277 msecs (HTTP/1.1 200) 2 headers in 71 bytes (1 switches on core 0)
+[pid: 359290|app: 0|req: 8/8] 127.0.0.1 () {54 vars in 809 bytes} [Sat Nov 15 05:26:28 2025] GET /console => generated 17179 bytes in 1 msecs (HTTP/1.1 200) 2 headers in 82 bytes (1 switches on core 0)
+[pid: 359290|app: 0|req: 9/9] 127.0.0.1 () {52 vars in 803 bytes} [Sat Nov 15 05:26:28 2025] GET /favicon.ico => generated 207 bytes in 0 msecs (HTTP/1.1 404) 2 headers in 87 bytes (1 switches on core 0)
+2025-11-15 05:26:31,250 INFO Will scan networks (iface -> network): [('wlan0', '10.0.0.0/24'), ('wlan1', '10.0.0.0/24')]
+2025-11-15 05:26:31,250 INFO Running nmap ARP/ping sweep on wlan0 (10.0.0.0/24) with args: -sn -PR -e wlan0
+2025-11-15 05:26:34,731 INFO Running nmap ARP/ping sweep on wlan1 (10.0.0.0/24) with args: -sn -PR -e wlan1
+2025-11-15 05:26:37,223 INFO Local IPs: {'127.0.0.1', '10.0.0.216', '10.0.0.62'}
+[pid: 359290|app: 0|req: 10/10] 127.0.0.1 () {48 vars in 683 bytes} [Sat Nov 15 05:26:31 2025] GET /list_targets => generated 15 bytes in 5982 msecs (HTTP/1.1 200) 2 headers in 71 bytes (1 switches on core 0)
+*** Starting uWSGI 2.0.31 (64bit) on [Sat Nov 15 05:26:39 2025] ***
+compiled with version: 15.2.1 20250813 on 12 October 2025 14:43:31
+os: Linux-6.17.7-arch1-1 #1 SMP PREEMPT_DYNAMIC Sun, 02 Nov 2025 17:27:22 +0000
+nodename: devpen11-unknown
+machine: x86_64
+clock source: unix
+pcre jit disabled
+detected number of CPU cores: 4
+current working directory: /home/devpen11/Desktop/MetasploitMCP
+detected binary path: /usr/bin/uwsgi
+*** WARNING: you are running uWSGI without its master process manager ***
+your processes number limit is 15273
+your memory page size is 4096 bytes
+detected max file descriptor number: 1024
+lock engine: pthread robust mutexes
+thunder lock: disabled (you can enable it with --thunder-lock)
+uwsgi socket 0 bound to TCP address 127.0.0.1:9090 fd 3
+Python version: 3.13.7 (main, Aug 15 2025, 12:34:02) [GCC 15.2.1 20250813]
+PEP 405 virtualenv detected: /home/devpen11/venv
+Set PythonHome to /home/devpen11/venv
+Python main interpreter initialized at 0x7f1f1cb32df0
+python threads support enabled
+your server socket listen backlog is limited to 100 connections
+your mercy for graceful operations on workers is 60 seconds
+mapped 72920 bytes (71 KB) for 1 cores
+*** Operational MODE: single process ***
+WSGI app 0 (mountpoint='') ready in 1 seconds on interpreter 0x7f1f1cb32df0 pid: 359436 (default app)
+*** uWSGI is running in multiple interpreter mode ***
+spawned uWSGI worker 1 (and the only) (pid: 359436, cores: 1)
+2025-11-15 05:26:44,905 INFO Will scan networks (iface -> network): [('wlan0', '10.0.0.0/24'), ('wlan1', '10.0.0.0/24')]
+2025-11-15 05:26:44,905 INFO Running nmap ARP/ping sweep on wlan0 (10.0.0.0/24) with args: -sn -PR -e wlan0
+2025-11-15 05:26:48,014 INFO Running nmap ARP/ping sweep on wlan1 (10.0.0.0/24) with args: -sn -PR -e wlan1
+2025-11-15 05:26:50,320 INFO Local IPs: {'127.0.0.1', '10.0.0.216', '10.0.0.62'}
+[pid: 359436|app: 0|req: 1/1] 127.0.0.1 () {48 vars in 683 bytes} [Sat Nov 15 05:26:44 2025] GET /list_targets => generated 15 bytes in 5422 msecs (HTTP/1.1 200) 2 headers in 71 bytes (1 switches on core 0)
+2025-11-15 05:32:08,047 INFO Will scan networks (iface -> network): [('wlan0', '10.0.0.0/24'), ('wlan1', '10.0.0.0/24')]
+2025-11-15 05:32:08,047 INFO Running nmap ARP/ping sweep on wlan0 (10.0.0.0/24) with args: -sn -PR -e wlan0
+2025-11-15 05:32:10,801 INFO Running nmap ARP/ping sweep on wlan1 (10.0.0.0/24) with args: -sn -PR -e wlan1
+2025-11-15 05:32:15,155 INFO Local IPs: {'127.0.0.1', '10.0.0.216', '10.0.0.62'}
+[pid: 359436|app: 0|req: 2/2] 127.0.0.1 () {48 vars in 683 bytes} [Sat Nov 15 05:32:08 2025] GET /list_targets => generated 15 bytes in 7115 msecs (HTTP/1.1 200) 2 headers in 71 bytes (1 switches on core 0)
+*** Starting uWSGI 2.0.31 (64bit) on [Sat Nov 15 05:56:14 2025] ***
+compiled with version: 15.2.1 20250813 on 12 October 2025 14:43:31
+os: Linux-6.17.7-arch1-1 #1 SMP PREEMPT_DYNAMIC Sun, 02 Nov 2025 17:27:22 +0000
+nodename: devpen11-unknown
+machine: x86_64
+clock source: unix
+pcre jit disabled
+detected number of CPU cores: 4
+current working directory: /home/devpen11/Desktop/MetasploitMCP
+detected binary path: /usr/bin/uwsgi
+*** WARNING: you are running uWSGI without its master process manager ***
+your processes number limit is 15273
+your memory page size is 4096 bytes
+detected max file descriptor number: 1024
+lock engine: pthread robust mutexes
+thunder lock: disabled (you can enable it with --thunder-lock)
+uwsgi socket 0 bound to TCP address 127.0.0.1:9090 fd 3
+Python version: 3.13.7 (main, Aug 15 2025, 12:34:02) [GCC 15.2.1 20250813]
+PEP 405 virtualenv detected: /home/devpen11/venv
+Set PythonHome to /home/devpen11/venv
+Python main interpreter initialized at 0x7f6a24332df0
+python threads support enabled
+your server socket listen backlog is limited to 100 connections
+your mercy for graceful operations on workers is 60 seconds
+mapped 72920 bytes (71 KB) for 1 cores
+*** Operational MODE: single process ***
+WSGI app 0 (mountpoint='') ready in 1 seconds on interpreter 0x7f6a24332df0 pid: 362743 (default app)
+*** uWSGI is running in multiple interpreter mode ***
+spawned uWSGI worker 1 (and the only) (pid: 362743, cores: 1)
+[pid: 362743|app: 0|req: 1/1] 127.0.0.1 () {50 vars in 756 bytes} [Sat Nov 15 05:56:24 2025] GET /console => generated 18299 bytes in 1 msecs (HTTP/1.1 200) 2 headers in 82 bytes (1 switches on core 0)
+[pid: 362743|app: 0|req: 2/2] 127.0.0.1 () {48 vars in 750 bytes} [Sat Nov 15 05:56:24 2025] GET /favicon.ico => generated 207 bytes in 1 msecs (HTTP/1.1 404) 2 headers in 87 bytes (1 switches on core 0)
+2025-11-15 05:56:26,160 INFO Will scan networks (iface -> network): [('wlan0', '10.0.0.0/24'), ('wlan1', '10.0.0.0/24')]
+2025-11-15 05:56:26,160 INFO Running nmap ARP/ping sweep on wlan0 (10.0.0.0/24) with args: -sn -PR -e wlan0
+2025-11-15 05:56:29,792 INFO Running nmap ARP/ping sweep on wlan1 (10.0.0.0/24) with args: -sn -PR -e wlan1
+2025-11-15 05:56:38,293 INFO Local IPs: {'10.0.0.62', '10.0.0.216', '127.0.0.1'}
+[pid: 362743|app: 0|req: 3/3] 127.0.0.1 () {48 vars in 696 bytes} [Sat Nov 15 05:56:26 2025] GET /list_targets => generated 15 bytes in 12142 msecs (HTTP/1.1 200) 2 headers in 71 bytes (1 switches on core 0)
+2025-11-15 05:56:38,299 INFO Will scan networks (iface -> network): [('wlan0', '10.0.0.0/24'), ('wlan1', '10.0.0.0/24')]
+2025-11-15 05:56:38,299 INFO Running nmap ARP/ping sweep on wlan0 (10.0.0.0/24) with args: -sn -PR -e wlan0
+2025-11-15 05:56:44,235 INFO Running nmap ARP/ping sweep on wlan1 (10.0.0.0/24) with args: -sn -PR -e wlan1
+2025-11-15 05:56:47,076 INFO Local IPs: {'10.0.0.62', '10.0.0.216', '127.0.0.1'}
+[pid: 362743|app: 0|req: 4/4] 127.0.0.1 () {48 vars in 696 bytes} [Sat Nov 15 05:56:38 2025] GET /list_targets => generated 15 bytes in 8782 msecs (HTTP/1.1 200) 2 headers in 71 bytes (1 switches on core 0)
+2025-11-15 05:56:47,084 INFO Will scan networks (iface -> network): [('wlan0', '10.0.0.0/24'), ('wlan1', '10.0.0.0/24')]
+2025-11-15 05:56:47,084 INFO Running nmap ARP/ping sweep on wlan0 (10.0.0.0/24) with args: -sn -PR -e wlan0
+2025-11-15 05:56:50,262 INFO Running nmap ARP/ping sweep on wlan1 (10.0.0.0/24) with args: -sn -PR -e wlan1
+2025-11-15 05:56:53,014 INFO Local IPs: {'10.0.0.62', '10.0.0.216', '127.0.0.1'}
+[pid: 362743|app: 0|req: 5/5] 127.0.0.1 () {48 vars in 696 bytes} [Sat Nov 15 05:56:47 2025] GET /list_targets => generated 15 bytes in 5938 msecs (HTTP/1.1 200) 2 headers in 71 bytes (1 switches on core 0)
+[pid: 362743|app: 0|req: 6/6] 127.0.0.1 () {32 vars in 346 bytes} [Sat Nov 15 06:00:17 2025] GET /console => generated 18299 bytes in 0 msecs (HTTP/1.1 200) 2 headers in 82 bytes (1 switches on core 0)
+[pid: 362743|app: 0|req: 7/7] 127.0.0.1 () {50 vars in 756 bytes} [Sat Nov 15 06:01:13 2025] GET /console => generated 18299 bytes in 0 msecs (HTTP/1.1 200) 2 headers in 82 bytes (1 switches on core 0)
+2025-11-15 06:08:07,271 INFO Will scan networks (iface -> network): [('wlan0', '10.0.0.0/24'), ('wlan1', '10.0.0.0/24')]
+2025-11-15 06:08:07,296 INFO Running nmap ARP/ping sweep on wlan0 (10.0.0.0/24) with args: -sn -PR -e wlan0
+2025-11-15 06:08:12,507 INFO Running nmap ARP/ping sweep on wlan1 (10.0.0.0/24) with args: -sn -PR -e wlan1
+2025-11-15 06:08:15,779 INFO Local IPs: {'10.0.0.62', '10.0.0.216', '127.0.0.1'}
+[pid: 362743|app: 0|req: 8/8] 127.0.0.1 () {48 vars in 696 bytes} [Sat Nov 15 06:08:07 2025] GET /list_targets => generated 15 bytes in 8600 msecs (HTTP/1.1 200) 2 headers in 71 bytes (1 switches on core 0)
+2025-11-15 06:08:27,916 INFO Will scan networks (iface -> network): [('wlan0', '10.0.0.0/24'), ('wlan1', '10.0.0.0/24')]
+2025-11-15 06:08:27,916 INFO Running nmap ARP/ping sweep on wlan0 (10.0.0.0/24) with args: -sn -PR -e wlan0
+2025-11-15 06:08:34,805 INFO Running nmap ARP/ping sweep on wlan1 (10.0.0.0/24) with args: -sn -PR -e wlan1
+2025-11-15 06:08:37,659 INFO Local IPs: {'10.0.0.62', '10.0.0.216', '127.0.0.1'}
+[pid: 362743|app: 0|req: 9/9] 127.0.0.1 () {48 vars in 696 bytes} [Sat Nov 15 06:08:27 2025] GET /list_targets => generated 15 bytes in 9751 msecs (HTTP/1.1 200) 2 headers in 71 bytes (1 switches on core 0)
+2025-11-15 06:08:39,737 INFO Will scan networks (iface -> network): [('wlan0', '10.0.0.0/24'), ('wlan1', '10.0.0.0/24')]
+2025-11-15 06:08:39,737 INFO Running nmap ARP/ping sweep on wlan0 (10.0.0.0/24) with args: -sn -PR -e wlan0
+2025-11-15 06:08:42,577 INFO Running nmap ARP/ping sweep on wlan1 (10.0.0.0/24) with args: -sn -PR -e wlan1
+2025-11-15 06:08:45,633 INFO Local IPs: {'10.0.0.62', '10.0.0.216', '127.0.0.1'}
+[pid: 362743|app: 0|req: 10/10] 127.0.0.1 () {48 vars in 696 bytes} [Sat Nov 15 06:08:39 2025] GET /list_targets => generated 15 bytes in 5904 msecs (HTTP/1.1 200) 2 headers in 71 bytes (1 switches on core 0)
+2025-11-15 06:08:45,641 INFO Will scan networks (iface -> network): [('wlan0', '10.0.0.0/24'), ('wlan1', '10.0.0.0/24')]
+2025-11-15 06:08:45,641 INFO Running nmap ARP/ping sweep on wlan0 (10.0.0.0/24) with args: -sn -PR -e wlan0
+2025-11-15 06:08:49,058 INFO Running nmap ARP/ping sweep on wlan1 (10.0.0.0/24) with args: -sn -PR -e wlan1
+2025-11-15 06:08:51,795 INFO Local IPs: {'10.0.0.62', '10.0.0.216', '127.0.0.1'}
+[pid: 362743|app: 0|req: 11/11] 127.0.0.1 () {48 vars in 696 bytes} [Sat Nov 15 06:08:45 2025] GET /list_targets => generated 15 bytes in 6161 msecs (HTTP/1.1 200) 2 headers in 71 bytes (1 switches on core 0)
+2025-11-15 06:12:26,559 INFO Will scan networks (iface -> network): [('wlan0', '10.0.0.0/24'), ('wlan1', '10.0.0.0/24')]
+2025-11-15 06:12:26,559 INFO Running nmap ARP/ping sweep on wlan0 (10.0.0.0/24) with args: -sn -PR -e wlan0
+2025-11-15 06:12:30,954 INFO Running nmap ARP/ping sweep on wlan1 (10.0.0.0/24) with args: -sn -PR -e wlan1
+2025-11-15 06:12:34,559 INFO Local IPs: {'10.0.0.62', '10.0.0.216', '127.0.0.1'}
+[pid: 362743|app: 0|req: 12/12] 127.0.0.1 () {48 vars in 696 bytes} [Sat Nov 15 06:12:26 2025] GET /list_targets => generated 15 bytes in 8007 msecs (HTTP/1.1 200) 2 headers in 71 bytes (1 switches on core 0)
+2025-11-15 06:33:44,199 INFO Will scan networks (iface -> network): [('wlan0', '10.0.0.0/24'), ('wlan1', '10.0.0.0/24')]
+2025-11-15 06:33:44,199 INFO Running nmap ARP/ping sweep on wlan0 (10.0.0.0/24) with args: -sn -PR -e wlan0
+2025-11-15 06:33:57,698 INFO Running nmap ARP/ping sweep on wlan1 (10.0.0.0/24) with args: -sn -PR -e wlan1
+2025-11-15 06:34:02,026 INFO Local IPs: {'10.0.0.62', '10.0.0.216', '127.0.0.1'}
+[pid: 362743|app: 0|req: 13/13] 127.0.0.1 () {32 vars in 356 bytes} [Sat Nov 15 06:33:44 2025] GET /list_targets => generated 15 bytes in 17949 msecs (HTTP/1.1 200) 2 headers in 71 bytes (1 switches on core 0)
+2025-11-15 08:25:03,915 INFO Will scan networks (iface -> network): [('wlan0', '10.0.0.0/24'), ('wlan1', '10.0.0.0/24')]
+2025-11-15 08:25:03,916 INFO Running nmap ARP/ping sweep on wlan0 (10.0.0.0/24) with args: -sn -PR -e wlan0
+2025-11-15 08:25:07,172 INFO Running nmap ARP/ping sweep on wlan1 (10.0.0.0/24) with args: -sn -PR -e wlan1
+2025-11-15 08:25:10,139 INFO Local IPs: {'10.0.0.62', '10.0.0.216', '127.0.0.1'}
+[pid: 362743|app: 0|req: 14/14] 127.0.0.1 () {48 vars in 696 bytes} [Sat Nov 15 08:25:03 2025] GET /list_targets => generated 15 bytes in 6232 msecs (HTTP/1.1 200) 2 headers in 71 bytes (1 switches on core 0)
+*** Starting uWSGI 2.0.31 (64bit) on [Sat Nov 15 09:08:35 2025] ***
+compiled with version: 15.2.1 20250813 on 12 October 2025 14:43:31
+os: Linux-6.17.7-arch1-1 #1 SMP PREEMPT_DYNAMIC Sun, 02 Nov 2025 17:27:22 +0000
+nodename: devpen11-unknown
+machine: x86_64
+clock source: unix
+pcre jit disabled
+detected number of CPU cores: 4
+current working directory: /home/devpen11/Desktop/MetasploitMCP
+detected binary path: /usr/bin/uwsgi
+*** WARNING: you are running uWSGI without its master process manager ***
+your processes number limit is 15273
+your memory page size is 4096 bytes
+detected max file descriptor number: 1024
+lock engine: pthread robust mutexes
+thunder lock: disabled (you can enable it with --thunder-lock)
+uwsgi socket 0 bound to TCP address 127.0.0.1:9090 fd 3
+Python version: 3.13.7 (main, Aug 15 2025, 12:34:02) [GCC 15.2.1 20250813]
+PEP 405 virtualenv detected: /home/devpen11/venv
+Set PythonHome to /home/devpen11/venv
+Python main interpreter initialized at 0x7f873b732df0
+python threads support enabled
+your server socket listen backlog is limited to 100 connections
+your mercy for graceful operations on workers is 60 seconds
+mapped 72920 bytes (71 KB) for 1 cores
+*** Operational MODE: single process ***
+WSGI app 0 (mountpoint='') ready in 1 seconds on interpreter 0x7f873b732df0 pid: 369978 (default app)
+*** uWSGI is running in multiple interpreter mode ***
+spawned uWSGI worker 1 (and the only) (pid: 369978, cores: 1)
+2025-11-15 09:09:02,432 INFO Will scan networks (iface -> network): [('wlan0', '10.0.0.0/24'), ('wlan1', '10.0.0.0/24')]
+2025-11-15 09:09:02,432 INFO Running nmap ARP/ping sweep on wlan0 (10.0.0.0/24) with args: -sn -PR -e wlan0
+2025-11-15 09:09:05,932 INFO Running nmap ARP/ping sweep on wlan1 (10.0.0.0/24) with args: -sn -PR -e wlan1
+2025-11-15 09:09:13,968 INFO Local IPs: {'127.0.0.1', '10.0.0.62', '10.0.0.216'}
+[pid: 369978|app: 0|req: 1/1] 127.0.0.1 () {48 vars in 696 bytes} [Sat Nov 15 09:09:02 2025] GET /list_targets => generated 15 bytes in 11542 msecs (HTTP/1.1 200) 2 headers in 71 bytes (1 switches on core 0)
+*** Starting uWSGI 2.0.31 (64bit) on [Sat Nov 15 09:20:47 2025] ***
+compiled with version: 15.2.1 20250813 on 12 October 2025 14:43:31
+os: Linux-6.17.7-arch1-1 #1 SMP PREEMPT_DYNAMIC Sun, 02 Nov 2025 17:27:22 +0000
+nodename: devpen11-unknown
+machine: x86_64
+clock source: unix
+pcre jit disabled
+detected number of CPU cores: 4
+current working directory: /home/devpen11/Desktop/MetasploitMCP
+detected binary path: /usr/bin/uwsgi
+uWSGI running as root, you can use --uid/--gid/--chroot options
+*** WARNING: you are running uWSGI as root !!! (use the --uid flag) *** 
+*** WARNING: you are running uWSGI without its master process manager ***
+your processes number limit is 15273
+your memory page size is 4096 bytes
+detected max file descriptor number: 1024
+lock engine: pthread robust mutexes
+thunder lock: disabled (you can enable it with --thunder-lock)
+uwsgi socket 0 bound to TCP address 127.0.0.1:9090 fd 3
+uWSGI running as root, you can use --uid/--gid/--chroot options
+*** WARNING: you are running uWSGI as root !!! (use the --uid flag) *** 
+Python version: 3.13.7 (main, Aug 15 2025, 12:34:02) [GCC 15.2.1 20250813]
+PEP 405 virtualenv detected: /home/devpen11/venv
+Set PythonHome to /home/devpen11/venv
+Python main interpreter initialized at 0x7f4591b32df0
+uWSGI running as root, you can use --uid/--gid/--chroot options
+*** WARNING: you are running uWSGI as root !!! (use the --uid flag) *** 
+python threads support enabled
+your server socket listen backlog is limited to 100 connections
+your mercy for graceful operations on workers is 60 seconds
+mapped 72920 bytes (71 KB) for 1 cores
+*** Operational MODE: single process ***
+WSGI app 0 (mountpoint='') ready in 1 seconds on interpreter 0x7f4591b32df0 pid: 373397 (default app)
+uWSGI running as root, you can use --uid/--gid/--chroot options
+*** WARNING: you are running uWSGI as root !!! (use the --uid flag) *** 
+*** uWSGI is running in multiple interpreter mode ***
+spawned uWSGI worker 1 (and the only) (pid: 373397, cores: 1)
+*** Starting uWSGI 2.0.31 (64bit) on [Sat Nov 15 09:21:13 2025] ***
+compiled with version: 15.2.1 20250813 on 12 October 2025 14:43:31
+os: Linux-6.17.7-arch1-1 #1 SMP PREEMPT_DYNAMIC Sun, 02 Nov 2025 17:27:22 +0000
+nodename: devpen11-unknown
+machine: x86_64
+clock source: unix
+pcre jit disabled
+detected number of CPU cores: 4
+current working directory: /home/devpen11/Desktop/MetasploitMCP
+detected binary path: /usr/bin/uwsgi
+uWSGI running as root, you can use --uid/--gid/--chroot options
+*** WARNING: you are running uWSGI as root !!! (use the --uid flag) *** 
+*** WARNING: you are running uWSGI without its master process manager ***
+your processes number limit is 15273
+your memory page size is 4096 bytes
+detected max file descriptor number: 1024
+lock engine: pthread robust mutexes
+thunder lock: disabled (you can enable it with --thunder-lock)
+probably another instance of uWSGI is running on the same address (127.0.0.1:9090).
+bind(): Address already in use [core/socket.c line 769]
+[pid: 373397|app: 0|req: 1/1] 127.0.0.1 () {50 vars in 756 bytes} [Sat Nov 15 09:21:51 2025] GET /console => generated 18299 bytes in 1 msecs (HTTP/1.1 200) 2 headers in 82 bytes (1 switches on core 0)
+[pid: 373397|app: 0|req: 2/2] 127.0.0.1 () {48 vars in 750 bytes} [Sat Nov 15 09:21:51 2025] GET /favicon.ico => generated 207 bytes in 1 msecs (HTTP/1.1 404) 2 headers in 87 bytes (1 switches on core 0)
+2025-11-15 09:22:27,960 INFO Will scan networks (iface -> network): [('wlan0', '10.0.0.0/24'), ('wlan1', '10.0.0.0/24')]
+2025-11-15 09:22:27,960 INFO Running nmap ARP/ping sweep on wlan0 (10.0.0.0/24) with args: -sn -PR -e wlan0
+2025-11-15 09:22:30,944 INFO Running nmap ARP/ping sweep on wlan1 (10.0.0.0/24) with args: -sn -PR -e wlan1
+2025-11-15 09:22:33,542 INFO Local IPs: {'127.0.0.1', '10.0.0.62', '10.0.0.216'}
+[pid: 373397|app: 0|req: 3/3] 127.0.0.1 () {48 vars in 696 bytes} [Sat Nov 15 09:22:27 2025] GET /list_targets => generated 1453 bytes in 5589 msecs (HTTP/1.1 200) 2 headers in 73 bytes (1 switches on core 0)
+2025-11-15 10:44:46,059 ERROR Metasploit auth failed: HTTPConnectionPool(host='127.0.0.1', port=55552): Max retries exceeded with url: /api/ (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7f458d5f7770>: Failed to establish a new connection: [Errno 111] Connection refused'))
+[pid: 373397|app: 0|req: 4/4] 127.0.0.1 () {54 vars in 785 bytes} [Sat Nov 15 10:44:46 2025] POST /launch => generated 288 bytes in 57 msecs (HTTP/1.1 500) 2 headers in 91 bytes (1 switches on core 0)
+2025-11-15 10:48:05,619 ERROR Metasploit auth failed: HTTPConnectionPool(host='127.0.0.1', port=55552): Max retries exceeded with url: /api/ (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7f458d4f8190>: Failed to establish a new connection: [Errno 111] Connection refused'))
+[pid: 373397|app: 0|req: 5/5] 127.0.0.1 () {54 vars in 785 bytes} [Sat Nov 15 10:48:05 2025] POST /launch => generated 288 bytes in 8 msecs (HTTP/1.1 500) 2 headers in 91 bytes (1 switches on core 0)
+2025-11-15 10:48:47,693 ERROR Metasploit auth failed: HTTPConnectionPool(host='127.0.0.1', port=55552): Max retries exceeded with url: /api/ (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7f458d63a490>: Failed to establish a new connection: [Errno 111] Connection refused'))
+[pid: 373397|app: 0|req: 6/6] 127.0.0.1 () {54 vars in 785 bytes} [Sat Nov 15 10:48:47 2025] POST /launch => generated 288 bytes in 5 msecs (HTTP/1.1 500) 2 headers in 91 bytes (1 switches on core 0)
+2025-11-15 10:48:53,909 ERROR Metasploit auth failed: HTTPConnectionPool(host='127.0.0.1', port=55552): Max retries exceeded with url: /api/ (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7f458d6c9220>: Failed to establish a new connection: [Errno 111] Connection refused'))
+[pid: 373397|app: 0|req: 7/7] 127.0.0.1 () {54 vars in 785 bytes} [Sat Nov 15 10:48:53 2025] POST /launch => generated 288 bytes in 5 msecs (HTTP/1.1 500) 2 headers in 91 bytes (1 switches on core 0)
+2025-11-15 10:48:59,833 ERROR Metasploit auth failed: HTTPConnectionPool(host='127.0.0.1', port=55552): Max retries exceeded with url: /api/ (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7f458d6cb230>: Failed to establish a new connection: [Errno 111] Connection refused'))
+[pid: 373397|app: 0|req: 8/8] 127.0.0.1 () {54 vars in 785 bytes} [Sat Nov 15 10:48:59 2025] POST /launch => generated 288 bytes in 6 msecs (HTTP/1.1 500) 2 headers in 91 bytes (1 switches on core 0)
+2025-11-15 10:49:05,008 ERROR Metasploit auth failed: HTTPConnectionPool(host='127.0.0.1', port=55552): Max retries exceeded with url: /api/ (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7f458d5185f0>: Failed to establish a new connection: [Errno 111] Connection refused'))
+[pid: 373397|app: 0|req: 9/9] 127.0.0.1 () {54 vars in 785 bytes} [Sat Nov 15 10:49:05 2025] POST /launch => generated 288 bytes in 5 msecs (HTTP/1.1 500) 2 headers in 91 bytes (1 switches on core 0)
+2025-11-15 10:49:16,158 ERROR Metasploit auth failed: HTTPConnectionPool(host='127.0.0.1', port=55552): Max retries exceeded with url: /api/ (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7f458d4fdbf0>: Failed to establish a new connection: [Errno 111] Connection refused'))
+[pid: 373397|app: 0|req: 10/10] 127.0.0.1 () {54 vars in 783 bytes} [Sat Nov 15 10:49:16 2025] POST /launch => generated 288 bytes in 2 msecs (HTTP/1.1 500) 2 headers in 91 bytes (1 switches on core 0)
+2025-11-15 10:49:22,277 ERROR Metasploit auth failed: HTTPConnectionPool(host='127.0.0.1', port=55552): Max retries exceeded with url: /api/ (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7f458d4fe360>: Failed to establish a new connection: [Errno 111] Connection refused'))
+[pid: 373397|app: 0|req: 11/11] 127.0.0.1 () {54 vars in 783 bytes} [Sat Nov 15 10:49:22 2025] POST /launch => generated 288 bytes in 4 msecs (HTTP/1.1 500) 2 headers in 91 bytes (1 switches on core 0)
+2025-11-15 10:49:34,635 ERROR Metasploit auth failed: HTTPConnectionPool(host='127.0.0.1', port=55552): Max retries exceeded with url: /api/ (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7f458d4fe580>: Failed to establish a new connection: [Errno 111] Connection refused'))
+[pid: 373397|app: 0|req: 12/12] 127.0.0.1 () {54 vars in 785 bytes} [Sat Nov 15 10:49:34 2025] POST /launch => generated 288 bytes in 5 msecs (HTTP/1.1 500) 2 headers in 91 bytes (1 switches on core 0)
+2025-11-15 10:50:52,784 INFO Will scan networks (iface -> network): [('wlan0', '10.0.0.0/24'), ('wlan1', '10.0.0.0/24')]
+2025-11-15 10:50:52,811 INFO Running nmap ARP/ping sweep on wlan0 (10.0.0.0/24) with args: -sn -PR -e wlan0
+2025-11-15 10:50:55,276 INFO Running nmap ARP/ping sweep on wlan1 (10.0.0.0/24) with args: -sn -PR -e wlan1
+2025-11-15 10:50:58,027 INFO Local IPs: {'127.0.0.1', '10.0.0.62', '10.0.0.216'}
+[pid: 373397|app: 0|req: 13/13] 127.0.0.1 () {48 vars in 696 bytes} [Sat Nov 15 10:50:52 2025] GET /list_targets => generated 1257 bytes in 5249 msecs (HTTP/1.1 200) 2 headers in 73 bytes (1 switches on core 0)
+2025-11-15 10:50:58,034 INFO Will scan networks (iface -> network): [('wlan0', '10.0.0.0/24'), ('wlan1', '10.0.0.0/24')]
+2025-11-15 10:50:58,034 INFO Running nmap ARP/ping sweep on wlan0 (10.0.0.0/24) with args: -sn -PR -e wlan0
+2025-11-15 10:51:01,090 INFO Running nmap ARP/ping sweep on wlan1 (10.0.0.0/24) with args: -sn -PR -e wlan1
+2025-11-15 10:51:05,114 INFO Local IPs: {'127.0.0.1', '10.0.0.62', '10.0.0.216'}
+[pid: 373397|app: 0|req: 14/14] 127.0.0.1 () {48 vars in 696 bytes} [Sat Nov 15 10:50:58 2025] GET /list_targets => generated 1254 bytes in 7086 msecs (HTTP/1.1 200) 2 headers in 73 bytes (1 switches on core 0)
+Gracefully killing worker 1 (pid: 373397)...
+*** Starting uWSGI 2.0.31 (64bit) on [Sat Nov 15 18:46:04 2025] ***
+compiled with version: 15.2.1 20250813 on 12 October 2025 14:43:31
+os: Linux-6.17.8-arch1-1 #1 SMP PREEMPT_DYNAMIC Fri, 14 Nov 2025 06:54:20 +0000
+nodename: devpen11-unknown
+machine: x86_64
+clock source: unix
+pcre jit disabled
+detected number of CPU cores: 4
+current working directory: /home/devpen11/Desktop/MetasploitMCP
+detected binary path: /usr/bin/uwsgi
+uWSGI running as root, you can use --uid/--gid/--chroot options
+*** WARNING: you are running uWSGI as root !!! (use the --uid flag) *** 
+*** WARNING: you are running uWSGI without its master process manager ***
+your processes number limit is 15273
+your memory page size is 4096 bytes
+detected max file descriptor number: 1024
+lock engine: pthread robust mutexes
+thunder lock: disabled (you can enable it with --thunder-lock)
+uwsgi socket 0 bound to TCP address 127.0.0.1:9090 fd 3
+uWSGI running as root, you can use --uid/--gid/--chroot options
+*** WARNING: you are running uWSGI as root !!! (use the --uid flag) *** 
+Python version: 3.13.7 (main, Aug 15 2025, 12:34:02) [GCC 15.2.1 20250813]
+PEP 405 virtualenv detected: /home/devpen11/venv
+Set PythonHome to /home/devpen11/venv
+Python main interpreter initialized at 0x7f6d60f32df0
+uWSGI running as root, you can use --uid/--gid/--chroot options
+*** WARNING: you are running uWSGI as root !!! (use the --uid flag) *** 
+python threads support enabled
+your server socket listen backlog is limited to 100 connections
+your mercy for graceful operations on workers is 60 seconds
+mapped 72920 bytes (71 KB) for 1 cores
+*** Operational MODE: single process ***
+WSGI app 0 (mountpoint='') ready in 6 seconds on interpreter 0x7f6d60f32df0 pid: 4558 (default app)
+uWSGI running as root, you can use --uid/--gid/--chroot options
+*** WARNING: you are running uWSGI as root !!! (use the --uid flag) *** 
+*** uWSGI is running in multiple interpreter mode ***
+spawned uWSGI worker 1 (and the only) (pid: 4558, cores: 1)
+[pid: 4558|app: 0|req: 1/1] 127.0.0.1 () {48 vars in 731 bytes} [Sat Nov 15 18:46:18 2025] GET /console => generated 18299 bytes in 8 msecs (HTTP/1.1 200) 2 headers in 82 bytes (1 switches on core 0)
+[pid: 4558|app: 0|req: 2/2] 127.0.0.1 () {48 vars in 750 bytes} [Sat Nov 15 18:46:18 2025] GET /favicon.ico => generated 207 bytes in 1 msecs (HTTP/1.1 404) 2 headers in 87 bytes (1 switches on core 0)
+[pid: 4558|app: 0|req: 3/3] 127.0.0.1 () {50 vars in 742 bytes} [Sat Nov 15 18:46:28 2025] GET / => generated 213 bytes in 0 msecs (HTTP/1.1 200) 2 headers in 72 bytes (1 switches on core 0)
+[pid: 4558|app: 0|req: 4/4] 127.0.0.1 () {48 vars in 742 bytes} [Sat Nov 15 18:46:28 2025] GET /favicon.ico => generated 207 bytes in 0 msecs (HTTP/1.1 404) 2 headers in 87 bytes (1 switches on core 0)
+[pid: 4558|app: 0|req: 5/5] 127.0.0.1 () {50 vars in 742 bytes} [Sat Nov 15 18:46:35 2025] GET / => generated 213 bytes in 0 msecs (HTTP/1.1 200) 2 headers in 72 bytes (1 switches on core 0)
+[pid: 4558|app: 0|req: 6/6] 127.0.0.1 () {48 vars in 742 bytes} [Sat Nov 15 18:46:35 2025] GET /favicon.ico => generated 207 bytes in 0 msecs (HTTP/1.1 404) 2 headers in 87 bytes (1 switches on core 0)
+[pid: 4558|app: 0|req: 7/7] 127.0.0.1 () {50 vars in 742 bytes} [Sat Nov 15 18:46:57 2025] GET / => generated 213 bytes in 0 msecs (HTTP/1.1 200) 2 headers in 72 bytes (1 switches on core 0)
+[pid: 4558|app: 0|req: 8/8] 127.0.0.1 () {48 vars in 742 bytes} [Sat Nov 15 18:46:57 2025] GET /favicon.ico => generated 207 bytes in 0 msecs (HTTP/1.1 404) 2 headers in 87 bytes (1 switches on core 0)
+[pid: 4558|app: 0|req: 9/9] 127.0.0.1 () {50 vars in 756 bytes} [Sat Nov 15 18:47:22 2025] GET /console => generated 18299 bytes in 0 msecs (HTTP/1.1 200) 2 headers in 82 bytes (1 switches on core 0)
+2025-11-15 18:47:35,667 INFO Will scan networks (iface -> network): [('wlan0', '10.0.0.0/24'), ('wlan1', '10.0.0.0/24')]
+2025-11-15 18:47:35,668 INFO Running nmap ARP/ping sweep on wlan0 (10.0.0.0/24) with args: -sn -PR -e wlan0
+2025-11-15 18:47:38,108 INFO Running nmap ARP/ping sweep on wlan1 (10.0.0.0/24) with args: -sn -PR -e wlan1
+2025-11-15 18:47:41,364 INFO Local IPs: {'10.0.0.62', '127.0.0.1', '10.0.0.216'}
+[pid: 4558|app: 0|req: 10/10] 127.0.0.1 () {48 vars in 696 bytes} [Sat Nov 15 18:47:35 2025] GET /list_targets => generated 745 bytes in 5705 msecs (HTTP/1.1 200) 2 headers in 72 bytes (1 switches on core 0)
+2025-11-15 18:51:32,911 INFO Will scan networks (iface -> network): [('wlan0', '10.0.0.0/24'), ('wlan1', '10.0.0.0/24')]
+2025-11-15 18:51:32,912 INFO Running nmap ARP/ping sweep on wlan0 (10.0.0.0/24) with args: -sn -PR -e wlan0
+2025-11-15 18:51:35,943 INFO Running nmap ARP/ping sweep on wlan1 (10.0.0.0/24) with args: -sn -PR -e wlan1
+2025-11-15 18:51:38,957 INFO Local IPs: {'10.0.0.62', '127.0.0.1', '10.0.0.216'}
+[pid: 4558|app: 0|req: 11/11] 127.0.0.1 () {48 vars in 696 bytes} [Sat Nov 15 18:51:32 2025] GET /list_targets => generated 941 bytes in 6054 msecs (HTTP/1.1 200) 2 headers in 72 bytes (1 switches on core 0)
+2025-11-15 18:51:38,965 INFO Will scan networks (iface -> network): [('wlan0', '10.0.0.0/24'), ('wlan1', '10.0.0.0/24')]
+2025-11-15 18:51:38,965 INFO Running nmap ARP/ping sweep on wlan0 (10.0.0.0/24) with args: -sn -PR -e wlan0
+2025-11-15 18:51:41,898 INFO Running nmap ARP/ping sweep on wlan1 (10.0.0.0/24) with args: -sn -PR -e wlan1
+2025-11-15 18:51:44,965 INFO Local IPs: {'10.0.0.62', '127.0.0.1', '10.0.0.216'}
+[pid: 4558|app: 0|req: 12/12] 127.0.0.1 () {48 vars in 696 bytes} [Sat Nov 15 18:51:38 2025] GET /list_targets => generated 941 bytes in 6007 msecs (HTTP/1.1 200) 2 headers in 72 bytes (1 switches on core 0)
+2025-11-15 18:54:11,858 ERROR Metasploit auth failed: HTTPConnectionPool(host='127.0.0.1', port=55552): Max retries exceeded with url: /api/ (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7f6d5cd4b230>: Failed to establish a new connection: [Errno 111] Connection refused'))
+[pid: 4558|app: 0|req: 13/13] 127.0.0.1 () {54 vars in 785 bytes} [Sat Nov 15 18:54:11 2025] POST /launch => generated 288 bytes in 47 msecs (HTTP/1.1 500) 2 headers in 91 bytes (1 switches on core 0)
+2025-11-15 20:19:11,388 INFO Will scan networks (iface -> network): [('wlan0', '10.0.0.0/24'), ('wlan1', '10.0.0.0/24')]
+2025-11-15 20:19:11,388 INFO Running nmap ARP/ping sweep on wlan0 (10.0.0.0/24) with args: -sn -PR -e wlan0
+2025-11-15 20:19:16,023 INFO Running nmap ARP/ping sweep on wlan1 (10.0.0.0/24) with args: -sn -PR -e wlan1
+2025-11-15 20:19:18,901 INFO Local IPs: {'10.0.0.62', '127.0.0.1', '10.0.0.216'}
+[pid: 4558|app: 0|req: 14/14] 127.0.0.1 () {48 vars in 696 bytes} [Sat Nov 15 20:19:11 2025] GET /list_targets => generated 1050 bytes in 7571 msecs (HTTP/1.1 200) 2 headers in 73 bytes (1 switches on core 0)
+2025-11-15 21:20:21,134 INFO Will scan networks (iface -> network): [('wlan0', '10.0.0.0/24'), ('wlan1', '10.0.0.0/24')]
+2025-11-15 21:20:21,134 INFO Running nmap ARP/ping sweep on wlan0 (10.0.0.0/24) with args: -sn -PR -e wlan0
+2025-11-15 21:20:23,503 INFO Running nmap ARP/ping sweep on wlan1 (10.0.0.0/24) with args: -sn -PR -e wlan1
+2025-11-15 21:20:26,545 INFO Local IPs: {'10.0.0.62', '127.0.0.1', '10.0.0.216'}
+[pid: 4558|app: 0|req: 15/15] 127.0.0.1 () {48 vars in 696 bytes} [Sat Nov 15 21:20:21 2025] GET /list_targets => generated 1148 bytes in 5439 msecs (HTTP/1.1 200) 2 headers in 73 bytes (1 switches on core 0)
+*** Starting uWSGI 2.0.31 (64bit) on [Sat Nov 15 22:24:45 2025] ***
+compiled with version: 15.2.1 20250813 on 12 October 2025 14:43:31
+os: Linux-6.17.8-arch1-1 #1 SMP PREEMPT_DYNAMIC Fri, 14 Nov 2025 06:54:20 +0000
+nodename: devpen11-unknown
+machine: x86_64
+clock source: unix
+pcre jit disabled
+detected number of CPU cores: 4
+current working directory: /home/devpen11/Desktop/MetasploitMCP
+detected binary path: /usr/bin/uwsgi
+uWSGI running as root, you can use --uid/--gid/--chroot options
+*** WARNING: you are running uWSGI as root !!! (use the --uid flag) *** 
+*** WARNING: you are running uWSGI without its master process manager ***
+your processes number limit is 15273
+your memory page size is 4096 bytes
+detected max file descriptor number: 1024
+lock engine: pthread robust mutexes
+thunder lock: disabled (you can enable it with --thunder-lock)
+probably another instance of uWSGI is running on the same address (127.0.0.1:9090).
+bind(): Address already in use [core/socket.c line 769]
+[pid: 4558|app: 0|req: 16/16] 127.0.0.1 () {50 vars in 756 bytes} [Sat Nov 15 22:25:27 2025] GET /console => generated 18299 bytes in 0 msecs (HTTP/1.1 200) 2 headers in 82 bytes (1 switches on core 0)
+[pid: 4558|app: 0|req: 17/17] 127.0.0.1 () {48 vars in 750 bytes} [Sat Nov 15 22:25:28 2025] GET /favicon.ico => generated 207 bytes in 1 msecs (HTTP/1.1 404) 2 headers in 87 bytes (1 switches on core 0)
+2025-11-16 00:34:30,240 INFO Will scan networks (iface -> network): [('wlan0', '10.0.0.0/24'), ('wlan1', '10.0.0.0/24')]
+2025-11-16 00:34:30,240 INFO Running nmap ARP/ping sweep on wlan0 (10.0.0.0/24) with args: -sn -PR -e wlan0
+2025-11-16 00:34:32,634 INFO Running nmap ARP/ping sweep on wlan1 (10.0.0.0/24) with args: -sn -PR -e wlan1
+2025-11-16 00:34:34,948 INFO Local IPs: {'10.0.0.62', '127.0.0.1', '10.0.0.216'}
+[pid: 4558|app: 0|req: 18/18] 127.0.0.1 () {48 vars in 696 bytes} [Sun Nov 16 00:34:30 2025] GET /list_targets => generated 598 bytes in 4800 msecs (HTTP/1.1 200) 2 headers in 72 bytes (1 switches on core 0)
+2025-11-16 01:24:01,748 INFO Will scan networks (iface -> network): [('wlan0', '10.0.0.0/24'), ('wlan1', '10.0.0.0/24')]
+2025-11-16 01:24:01,749 INFO Running nmap ARP/ping sweep on wlan0 (10.0.0.0/24) with args: -sn -PR -e wlan0
+2025-11-16 01:24:04,811 INFO Running nmap ARP/ping sweep on wlan1 (10.0.0.0/24) with args: -sn -PR -e wlan1
+2025-11-16 01:24:07,641 INFO Local IPs: {'10.0.0.62', '127.0.0.1', '10.0.0.216'}
+[pid: 4558|app: 0|req: 19/19] 127.0.0.1 () {48 vars in 696 bytes} [Sun Nov 16 01:24:01 2025] GET /list_targets => generated 800 bytes in 5899 msecs (HTTP/1.1 200) 2 headers in 72 bytes (1 switches on core 0)

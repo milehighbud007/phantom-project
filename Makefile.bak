@@ -1,0 +1,53 @@
+VENV_PY=/home/devpen11/Desktop/MetasploitMCP/.venv/bin/python
+INSTALL_DIR=/opt/metasploitmcp
+SYSTEM_UNIT=/etc/systemd/system/metasploitmcp-scapy.service
+USER_UNIT=$(HOME)/.config/systemd/user/metasploitmcp-app.service
+SOCKET_DIR=/var/run/metasploitmcp
+
+.PHONY: install enable start stop uninstall run dev
+
+install:
+    sudo mkdir -p $(SOCKET_DIR)
+    sudo chown root:root $(SOCKET_DIR)
+    sudo chmod 750 $(SOCKET_DIR)
+    sudo mkdir -p $(INSTALL_DIR)
+    sudo cp -v scapy_probe_socket.py $(INSTALL_DIR)/
+    sudo chmod 750 $(INSTALL_DIR)/scapy_probe_socket.py
+    sudo cp -v systemd/metasploitmcp-scapy.service $(SYSTEM_UNIT)
+    mkdir -p ~/.config/systemd/user
+    cp -v systemd/metasploitmcp-app.service $(USER_UNIT)
+    sudo systemctl daemon-reload
+    systemctl --user daemon-reload
+
+enable: install
+    sudo systemctl enable --now metasploitmcp-scapy.service || true
+    systemctl --user enable --now metasploitmcp-app.service || true
+
+start:
+    sudo systemctl start metasploitmcp-scapy.service || true
+    systemctl --user start metasploitmcp-app.service || true
+
+stop:
+    systemctl --user stop metasploitmcp-app.service || true
+    sudo systemctl stop metasploitmcp-scapy.service || true
+
+uninstall:
+    systemctl --user disable --now metasploitmcp-app.service || true
+    sudo systemctl disable --now metasploitmcp-scapy.service || true
+    sudo rm -f $(SYSTEM_UNIT)
+    rm -f $(USER_UNIT)
+    sudo rm -rf $(SOCKET_DIR)
+    sudo rm -rf $(INSTALL_DIR)
+    sudo systemctl daemon-reload
+    systemctl --user daemon-reload
+
+run: start
+    @echo "Services started. Tailing logs (CTRL-C to exit)..."
+    sudo journalctl -u metasploitmcp-scapy.service -n 50 -f & \
+        JOURNAL_PID=$$!; \
+        journalctl --user-unit metasploitmcp-app.service -n 50 -f; \
+        kill $$JOURNAL_PID
+
+dev:
+    @echo "Run Flask app in foreground (activate venv first):"
+    . .venv/bin/activate && exec python app.py

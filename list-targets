@@ -1,0 +1,29 @@
+import threading
+import time
+
+# simple cache for list_targets
+_list_targets_cache = {
+    'ts': 0,        # timestamp of last update
+    'ttl': 10,      # seconds cache TTL, tune as needed (5-30)
+    'data': None,
+    'scanning': False,
+}
+_cache_lock = threading.Lock()
+
+def _run_scan_in_background(scan_fn, *args, **kwargs):
+    def _worker():
+        try:
+            with _cache_lock:
+                _list_targets_cache['scanning'] = True
+            # perform the real scan (replace scan_fn call with your actual scan)
+            result = scan_fn(*args, **kwargs)
+            with _cache_lock:
+                _list_targets_cache['data'] = result
+                _list_targets_cache['ts'] = time.time()
+        finally:
+            with _cache_lock:
+                _list_targets_cache['scanning'] = False
+
+    thread = threading.Thread(target=_worker, daemon=True)
+    thread.start()
+    return thread

@@ -1,0 +1,18 @@
+[Unit]
+Description=MetasploitMCP Scapy ARP probe helper (Unix socket)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=root
+Group=root
+ExecStart=/home/devpen11/Desktop/MetasploitMCP/.venv/bin/python /opt/metasploitmcp/scapy_probe_socket.py
+Restart=on-failure
+ProtectSystem=full
+ProtectHome=yes
+PrivateTmp=yes
+NoNewPrivs=yes
+
+[Install]
+WantedBy=multi-user.target

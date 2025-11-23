@@ -1,0 +1,564 @@
+{
+  "exploit_success_rates": {
+    "exploit/multi/handler": {
+      "success": 4,
+      "failure": 4
+    },
+    "exploit/multi/http/tomcat_mgr_deploy": {
+      "success": 2,
+      "failure": 2
+    },
+    "exploit/multi/ssh/sshexec": {
+      "success": 2,
+      "failure": 2
+    },
+    "exploit/windows/smb/ms17_010_eternalblue": {
+      "success": 4,
+      "failure": 4
+    },
+    "exploit/windows/smb/ms08_067_netapi": {
+      "success": 4,
+      "failure": 4
+    },
+    "exploit/windows/rdp/cve_2019_0708_bluekeep": {
+      "success": 2,
+      "failure": 2
+    },
+    "exploit/windows/local/bypassuac": {
+      "success": 2,
+      "failure": 2
+    },
+    "exploit/windows/smb/psexec": {
+      "success": 2,
+      "failure": 2
+    },
+    "exploit/windows/dcerpc/ms03_026_dcom": {
+      "success": 2,
+      "failure": 2
+    },
+    "exploit/linux/samba/is_known_pipename": {
+      "success": 4,
+      "failure": 4
+    },
+    "exploit/unix/ftp/vsftpd_234_backdoor": {
+      "success": 2,
+      "failure": 2
+    },
+    "exploit/unix/misc/distcc_exec": {
+      "success": 2,
+      "failure": 2
+    },
+    "exploit/linux/http/shellshock_cgi": {
+      "success": 2,
+      "failure": 2
+    }
+  },
+  "target_profiles": {
+    "D4:AB:82:BA:4B:AC": {
+      "ip": "10.0.0.1",
+      "hostname": "",
+      "vendor": "Commscope",
+      "services": [],
+      "vulnerabilities": [],
+      "os_guess": "Unknown",
+      "first_seen": "2025-11-16T23:27:33.637696",
+      "last_seen": "2025-11-19T08:06:21.495168",
+      "times_seen": 14
+    },
+    "A8:B1:3B:04:CE:AF": {
+      "ip": "10.0.0.41",
+      "hostname": "",
+      "vendor": "HP",
+      "services": [],
+      "vulnerabilities": [],
+      "os_guess": "Windows",
+      "first_seen": "2025-11-16T23:27:33.638455",
+      "last_seen": "2025-11-17T12:58:40.343944",
+      "times_seen": 10
+    },
+    "2E:71:44:BB:6F:28": {
+      "ip": "10.0.0.45",
+      "hostname": "",
+      "vendor": "Unknown",
+      "services": [],
+      "vulnerabilities": [],
+      "os_guess": "Unknown",
+      "first_seen": "2025-11-16T23:27:33.669837",
+      "last_seen": "2025-11-19T08:06:21.548156",
+      "times_seen": 10
+    },
+    "D4:AB:82:BA:4B:AD": {
+      "ip": "10.0.0.254",
+      "hostname": "",
+      "vendor": "Commscope",
+      "services": [],
+      "vulnerabilities": [],
+      "os_guess": "Unknown",
+      "first_seen": "2025-11-16T23:27:33.671515",
+      "last_seen": "2025-11-19T05:50:18.172771",
+      "times_seen": 13
+    },
+    "2A:CF:B4:6D:02:DB": {
+      "ip": "10.0.0.237",
+      "hostname": "",
+      "vendor": "Unknown",
+      "services": [],
+      "vulnerabilities": [],
+      "os_guess": "Unknown",
+      "first_seen": "2025-11-17T00:39:57.174224",
+      "last_seen": "2025-11-19T08:06:21.566526",
+      "times_seen": 6
+    },
+    "DE:6C:42:D3:F7:04": {
+      "ip": "10.0.0.106",
+      "hostname": "",
+      "vendor": "Unknown",
+      "services": [],
+      "vulnerabilities": [],
+      "os_guess": "Unknown",
+      "first_seen": "2025-11-17T20:25:37.500394",
+      "last_seen": "2025-11-19T08:06:21.552944",
+      "times_seen": 4
+    },
+    "54:13:79:AC:ED:6E": {
+      "ip": "10.0.0.129",
+      "hostname": "",
+      "vendor": "Hon Hai Precision Ind.",
+      "services": [],
+      "vulnerabilities": [],
+      "os_guess": "Unknown",
+      "first_seen": "2025-11-19T04:42:17.039018",
+      "last_seen": "2025-11-19T08:06:21.557367",
+      "times_seen": 3
+    },
+    "5A:D8:3E:1C:C8:B0": {
+      "ip": "10.0.0.158",
+      "hostname": "",
+      "vendor": "Unknown",
+      "services": [],
+      "vulnerabilities": [],
+      "os_guess": "Unknown",
+      "first_seen": "2025-11-19T08:06:21.561788",
+      "last_seen": "2025-11-19T08:06:21.561816",
+      "times_seen": 1
+    }
+  },
+  "network_patterns": {},
+  "payload_effectiveness": {
+    "windows/meterpreter/reverse_tcp": {
+      "success": 10,
+      "failure": 10
+    },
+    "linux/x86/meterpreter/reverse_tcp": {
+      "success": 8,
+      "failure": 8
+    },
+    "java/meterpreter/reverse_tcp": {
+      "success": 2,
+      "failure": 2
+    },
+    "windows/x64/meterpreter/reverse_tcp": {
+      "success": 4,
+      "failure": 4
+    },
+    "windows/shell/reverse_tcp": {
+      "success": 4,
+      "failure": 4
+    },
+    "cmd/unix/reverse": {
+      "success": 4,
+      "failure": 4
+    },
+    "cmd/unix/interact": {
+      "success": 2,
+      "failure": 2
+    }
+  },
+  "exploit_target_mapping": {
+    "exploit/multi/handler:Unknown": {
+      "success": 0,
+      "failure": 2
+    },
+    "exploit/multi/http/tomcat_mgr_deploy:Unknown": {
+      "success": 0,
+      "failure": 1
+    },
+    "exploit/multi/ssh/sshexec:Unknown": {
+      "success": 0,
+      "failure": 1
+    },
+    "exploit/windows/smb/ms17_010_eternalblue:Unknown": {
+      "success": 0,
+      "failure": 2
+    },
+    "exploit/windows/smb/ms08_067_netapi:Unknown": {
+      "success": 0,
+      "failure": 2
+    },
+    "exploit/windows/rdp/cve_2019_0708_bluekeep:Unknown": {
+      "success": 0,
+      "failure": 1
+    },
+    "exploit/windows/local/bypassuac:Unknown": {
+      "success": 0,
+      "failure": 1
+    },
+    "exploit/windows/smb/psexec:Unknown": {
+      "success": 0,
+      "failure": 1
+    },
+    "exploit/windows/dcerpc/ms03_026_dcom:Unknown": {
+      "success": 0,
+      "failure": 1
+    },
+    "exploit/linux/samba/is_known_pipename:Unknown": {
+      "success": 0,
+      "failure": 2
+    },
+    "exploit/unix/ftp/vsftpd_234_backdoor:Unknown": {
+      "success": 0,
+      "failure": 1
+    },
+    "exploit/unix/misc/distcc_exec:Unknown": {
+      "success": 0,
+      "failure": 1
+    },
+    "exploit/linux/http/shellshock_cgi:Unknown": {
+      "success": 0,
+      "failure": 1
+    },
+    "exploit/windows/smb/ms17_010_eternalblue:Windows": {
+      "success": 4,
+      "failure": 2
+    },
+    "exploit/windows/smb/ms08_067_netapi:Windows": {
+      "success": 4,
+      "failure": 2
+    },
+    "exploit/windows/rdp/cve_2019_0708_bluekeep:Windows": {
+      "success": 2,
+      "failure": 1
+    },
+    "exploit/windows/local/bypassuac:Windows": {
+      "success": 2,
+      "failure": 1
+    },
+    "exploit/windows/smb/psexec:Windows": {
+      "success": 2,
+      "failure": 1
+    },
+    "exploit/windows/dcerpc/ms03_026_dcom:Windows": {
+      "success": 2,
+      "failure": 1
+    },
+    "exploit/linux/samba/is_known_pipename:Windows": {
+      "success": 4,
+      "failure": 2
+    },
+    "exploit/unix/ftp/vsftpd_234_backdoor:Windows": {
+      "success": 2,
+      "failure": 1
+    },
+    "exploit/unix/misc/distcc_exec:Windows": {
+      "success": 2,
+      "failure": 1
+    },
+    "exploit/linux/http/shellshock_cgi:Windows": {
+      "success": 2,
+      "failure": 1
+    },
+    "exploit/multi/handler:Windows": {
+      "success": 4,
+      "failure": 2
+    },
+    "exploit/multi/http/tomcat_mgr_deploy:Windows": {
+      "success": 2,
+      "failure": 1
+    },
+    "exploit/multi/ssh/sshexec:Windows": {
+      "success": 2,
+      "failure": 1
+    }
+  },
+  "learned_techniques": [
+    {
+      "timestamp": "2025-11-16T23:28:11.147046",
+      "exploit": "exploit/multi/handler",
+      "payload": "windows/meterpreter/reverse_tcp",
+      "target": "2E:71:44:BB:6F:28",
+      "failure_type": "connection_refused",
+      "error_message": "Auth failed: HTTPConnectionPool(host='127.0.0.1', port=55552): Max retries exceeded with url: /api/ (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7f39ddb27a10>: Failed to establish a new connection: [Errno 111] Connection refused'))"
+    },
+    {
+      "timestamp": "2025-11-16T23:28:13.155853",
+      "exploit": "exploit/multi/handler",
+      "payload": "linux/x86/meterpreter/reverse_tcp",
+      "target": "2E:71:44:BB:6F:28",
+      "failure_type": "connection_refused",
+      "error_message": "Auth failed: HTTPConnectionPool(host='127.0.0.1', port=55552): Max retries exceeded with url: /api/ (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7f39ddabe990>: Failed to establish a new connection: [Errno 111] Connection refused'))"
+    },
+    {
+      "timestamp": "2025-11-16T23:28:15.161988",
+      "exploit": "exploit/multi/http/tomcat_mgr_deploy",
+      "payload": "java/meterpreter/reverse_tcp",
+      "target": "2E:71:44:BB:6F:28",
+      "failure_type": "connection_refused",
+      "error_message": "Auth failed: HTTPConnectionPool(host='127.0.0.1', port=55552): Max retries exceeded with url: /api/ (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7f39ddabed50>: Failed to establish a new connection: [Errno 111] Connection refused'))"
+    },
+    {
+      "timestamp": "2025-11-16T23:28:17.170576",
+      "exploit": "exploit/multi/ssh/sshexec",
+      "payload": "linux/x86/meterpreter/reverse_tcp",
+      "target": "2E:71:44:BB:6F:28",
+      "failure_type": "connection_refused",
+      "error_message": "Auth failed: HTTPConnectionPool(host='127.0.0.1', port=55552): Max retries exceeded with url: /api/ (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7f39ddb4be10>: Failed to establish a new connection: [Errno 111] Connection refused'))"
+    },
+    {
+      "timestamp": "2025-11-16T23:28:19.178482",
+      "exploit": "exploit/windows/smb/ms17_010_eternalblue",
+      "payload": "windows/x64/meterpreter/reverse_tcp",
+      "target": "2E:71:44:BB:6F:28",
+      "failure_type": "connection_refused",
+      "error_message": "Auth failed: HTTPConnectionPool(host='127.0.0.1', port=55552): Max retries exceeded with url: /api/ (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7f39dd980640>: Failed to establish a new connection: [Errno 111] Connection refused'))"
+    },
+    {
+      "timestamp": "2025-11-16T23:28:21.188020",
+      "exploit": "exploit/windows/smb/ms17_010_eternalblue",
+      "payload": "windows/meterpreter/reverse_tcp",
+      "target": "2E:71:44:BB:6F:28",
+      "failure_type": "connection_refused",
+      "error_message": "Auth failed: HTTPConnectionPool(host='127.0.0.1', port=55552): Max retries exceeded with url: /api/ (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7f39dd955eb0>: Failed to establish a new connection: [Errno 111] Connection refused'))"
+    },
+    {
+      "timestamp": "2025-11-16T23:28:23.195669",
+      "exploit": "exploit/windows/smb/ms08_067_netapi",
+      "payload": "windows/meterpreter/reverse_tcp",
+      "target": "2E:71:44:BB:6F:28",
+      "failure_type": "connection_refused",
+      "error_message": "Auth failed: HTTPConnectionPool(host='127.0.0.1', port=55552): Max retries exceeded with url: /api/ (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7f39dd9905a0>: Failed to establish a new connection: [Errno 111] Connection refused'))"
+    },
+    {
+      "timestamp": "2025-11-16T23:28:25.204101",
+      "exploit": "exploit/windows/smb/ms08_067_netapi",
+      "payload": "windows/shell/reverse_tcp",
+      "target": "2E:71:44:BB:6F:28",
+      "failure_type": "connection_refused",
+      "error_message": "Auth failed: HTTPConnectionPool(host='127.0.0.1', port=55552): Max retries exceeded with url: /api/ (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7f39dd990d10>: Failed to establish a new connection: [Errno 111] Connection refused'))"
+    },
+    {
+      "timestamp": "2025-11-16T23:28:27.213194",
+      "exploit": "exploit/windows/rdp/cve_2019_0708_bluekeep",
+      "payload": "windows/x64/meterpreter/reverse_tcp",
+      "target": "2E:71:44:BB:6F:28",
+      "failure_type": "connection_refused",
+      "error_message": "Auth failed: HTTPConnectionPool(host='127.0.0.1', port=55552): Max retries exceeded with url: /api/ (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7f39dd991040>: Failed to establish a new connection: [Errno 111] Connection refused'))"
+    },
+    {
+      "timestamp": "2025-11-16T23:28:29.222546",
+      "exploit": "exploit/windows/local/bypassuac",
+      "payload": "windows/meterpreter/reverse_tcp",
+      "target": "2E:71:44:BB:6F:28",
+      "failure_type": "connection_refused",
+      "error_message": "Auth failed: HTTPConnectionPool(host='127.0.0.1', port=55552): Max retries exceeded with url: /api/ (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7f39dd991260>: Failed to establish a new connection: [Errno 111] Connection refused'))"
+    },
+    {
+      "timestamp": "2025-11-16T23:28:31.231548",
+      "exploit": "exploit/windows/smb/psexec",
+      "payload": "windows/meterpreter/reverse_tcp",
+      "target": "2E:71:44:BB:6F:28",
+      "failure_type": "connection_refused",
+      "error_message": "Auth failed: HTTPConnectionPool(host='127.0.0.1', port=55552): Max retries exceeded with url: /api/ (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7f39dd991480>: Failed to establish a new connection: [Errno 111] Connection refused'))"
+    },
+    {
+      "timestamp": "2025-11-16T23:28:33.244193",
+      "exploit": "exploit/windows/dcerpc/ms03_026_dcom",
+      "payload": "windows/shell/reverse_tcp",
+      "target": "2E:71:44:BB:6F:28",
+      "failure_type": "connection_refused",
+      "error_message": "Auth failed: HTTPConnectionPool(host='127.0.0.1', port=55552): Max retries exceeded with url: /api/ (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7f39ddb37df0>: Failed to establish a new connection: [Errno 111] Connection refused'))"
+    },
+    {
+      "timestamp": "2025-11-16T23:28:35.251720",
+      "exploit": "exploit/linux/samba/is_known_pipename",
+      "payload": "linux/x86/meterpreter/reverse_tcp",
+      "target": "2E:71:44:BB:6F:28",
+      "failure_type": "connection_refused",
+      "error_message": "Auth failed: HTTPConnectionPool(host='127.0.0.1', port=55552): Max retries exceeded with url: /api/ (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7f39ddb37bd0>: Failed to establish a new connection: [Errno 111] Connection refused'))"
+    },
+    {
+      "timestamp": "2025-11-16T23:28:37.260872",
+      "exploit": "exploit/linux/samba/is_known_pipename",
+      "payload": "cmd/unix/reverse",
+      "target": "2E:71:44:BB:6F:28",
+      "failure_type": "connection_refused",
+      "error_message": "Auth failed: HTTPConnectionPool(host='127.0.0.1', port=55552): Max retries exceeded with url: /api/ (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7f39ddb378a0>: Failed to establish a new connection: [Errno 111] Connection refused'))"
+    },
+    {
+      "timestamp": "2025-11-16T23:28:39.270265",
+      "exploit": "exploit/unix/ftp/vsftpd_234_backdoor",
+      "payload": "cmd/unix/interact",
+      "target": "2E:71:44:BB:6F:28",
+      "failure_type": "connection_refused",
+      "error_message": "Auth failed: HTTPConnectionPool(host='127.0.0.1', port=55552): Max retries exceeded with url: /api/ (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7f39ddb37680>: Failed to establish a new connection: [Errno 111] Connection refused'))"
+    },
+    {
+      "timestamp": "2025-11-16T23:28:41.280595",
+      "exploit": "exploit/unix/misc/distcc_exec",
+      "payload": "cmd/unix/reverse",
+      "target": "2E:71:44:BB:6F:28",
+      "failure_type": "connection_refused",
+      "error_message": "Auth failed: HTTPConnectionPool(host='127.0.0.1', port=55552): Max retries exceeded with url: /api/ (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7f39ddb37570>: Failed to establish a new connection: [Errno 111] Connection refused'))"
+    },
+    {
+      "timestamp": "2025-11-16T23:28:43.287666",
+      "exploit": "exploit/linux/http/shellshock_cgi",
+      "payload": "linux/x86/meterpreter/reverse_tcp",
+      "target": "2E:71:44:BB:6F:28",
+      "failure_type": "connection_refused",
+      "error_message": "Auth failed: HTTPConnectionPool(host='127.0.0.1', port=55552): Max retries exceeded with url: /api/ (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7f39ddb37350>: Failed to establish a new connection: [Errno 111] Connection refused'))"
+    },
+    {
+      "timestamp": "2025-11-17T12:54:56.368403",
+      "exploit": "exploit/windows/smb/ms17_010_eternalblue",
+      "payload": "windows/x64/meterpreter/reverse_tcp",
+      "target": "A8:B1:3B:04:CE:AF",
+      "failure_type": "connection_refused",
+      "error_message": "Auth failed: HTTPConnectionPool(host='127.0.0.1', port=55553): Max retries exceeded with url: /api/ (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7f2cf89bbe00>: Failed to establish a new connection: [Errno 111] Connection refused'))"
+    },
+    {
+      "timestamp": "2025-11-17T12:54:58.377473",
+      "exploit": "exploit/windows/smb/ms17_010_eternalblue",
+      "payload": "windows/meterpreter/reverse_tcp",
+      "target": "A8:B1:3B:04:CE:AF",
+      "failure_type": "connection_refused",
+      "error_message": "Auth failed: HTTPConnectionPool(host='127.0.0.1', port=55553): Max retries exceeded with url: /api/ (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7f2cf87e74d0>: Failed to establish a new connection: [Errno 111] Connection refused'))"
+    },
+    {
+      "timestamp": "2025-11-17T12:55:00.384268",
+      "exploit": "exploit/windows/smb/ms08_067_netapi",
+      "payload": "windows/meterpreter/reverse_tcp",
+      "target": "A8:B1:3B:04:CE:AF",
+      "failure_type": "connection_refused",
+      "error_message": "Auth failed: HTTPConnectionPool(host='127.0.0.1', port=55553): Max retries exceeded with url: /api/ (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7f2cf882c050>: Failed to establish a new connection: [Errno 111] Connection refused'))"
+    },
+    {
+      "timestamp": "2025-11-17T12:55:02.393197",
+      "exploit": "exploit/windows/smb/ms08_067_netapi",
+      "payload": "windows/shell/reverse_tcp",
+      "target": "A8:B1:3B:04:CE:AF",
+      "failure_type": "connection_refused",
+      "error_message": "Auth failed: HTTPConnectionPool(host='127.0.0.1', port=55553): Max retries exceeded with url: /api/ (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7f2cf8830c30>: Failed to establish a new connection: [Errno 111] Connection refused'))"
+    },
+    {
+      "timestamp": "2025-11-17T12:55:04.402160",
+      "exploit": "exploit/windows/rdp/cve_2019_0708_bluekeep",
+      "payload": "windows/x64/meterpreter/reverse_tcp",
+      "target": "A8:B1:3B:04:CE:AF",
+      "failure_type": "connection_refused",
+      "error_message": "Auth failed: HTTPConnectionPool(host='127.0.0.1', port=55553): Max retries exceeded with url: /api/ (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7f2cf8831350>: Failed to establish a new connection: [Errno 111] Connection refused'))"
+    },
+    {
+      "timestamp": "2025-11-17T12:55:06.410950",
+      "exploit": "exploit/windows/local/bypassuac",
+      "payload": "windows/meterpreter/reverse_tcp",
+      "target": "A8:B1:3B:04:CE:AF",
+      "failure_type": "connection_refused",
+      "error_message": "Auth failed: HTTPConnectionPool(host='127.0.0.1', port=55553): Max retries exceeded with url: /api/ (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7f2cf87e2b10>: Failed to establish a new connection: [Errno 111] Connection refused'))"
+    },
+    {
+      "timestamp": "2025-11-17T12:55:08.421702",
+      "exploit": "exploit/windows/smb/psexec",
+      "payload": "windows/meterpreter/reverse_tcp",
+      "target": "A8:B1:3B:04:CE:AF",
+      "failure_type": "connection_refused",
+      "error_message": "Auth failed: HTTPConnectionPool(host='127.0.0.1', port=55553): Max retries exceeded with url: /api/ (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7f2cf8838af0>: Failed to establish a new connection: [Errno 111] Connection refused'))"
+    },
+    {
+      "timestamp": "2025-11-17T12:55:10.430279",
+      "exploit": "exploit/windows/dcerpc/ms03_026_dcom",
+      "payload": "windows/shell/reverse_tcp",
+      "target": "A8:B1:3B:04:CE:AF",
+      "failure_type": "connection_refused",
+      "error_message": "Auth failed: HTTPConnectionPool(host='127.0.0.1', port=55553): Max retries exceeded with url: /api/ (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7f2cf89b39b0>: Failed to establish a new connection: [Errno 111] Connection refused'))"
+    },
+    {
+      "timestamp": "2025-11-17T12:55:12.439019",
+      "exploit": "exploit/linux/samba/is_known_pipename",
+      "payload": "linux/x86/meterpreter/reverse_tcp",
+      "target": "A8:B1:3B:04:CE:AF",
+      "failure_type": "connection_refused",
+      "error_message": "Auth failed: HTTPConnectionPool(host='127.0.0.1', port=55553): Max retries exceeded with url: /api/ (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7f2cf89b3350>: Failed to establish a new connection: [Errno 111] Connection refused'))"
+    },
+    {
+      "timestamp": "2025-11-17T12:55:14.447595",
+      "exploit": "exploit/linux/samba/is_known_pipename",
+      "payload": "cmd/unix/reverse",
+      "target": "A8:B1:3B:04:CE:AF",
+      "failure_type": "connection_refused",
+      "error_message": "Auth failed: HTTPConnectionPool(host='127.0.0.1', port=55553): Max retries exceeded with url: /api/ (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7f2cf89b3790>: Failed to establish a new connection: [Errno 111] Connection refused'))"
+    },
+    {
+      "timestamp": "2025-11-17T12:55:16.456176",
+      "exploit": "exploit/unix/ftp/vsftpd_234_backdoor",
+      "payload": "cmd/unix/interact",
+      "target": "A8:B1:3B:04:CE:AF",
+      "failure_type": "connection_refused",
+      "error_message": "Auth failed: HTTPConnectionPool(host='127.0.0.1', port=55553): Max retries exceeded with url: /api/ (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7f2cf89b3240>: Failed to establish a new connection: [Errno 111] Connection refused'))"
+    },
+    {
+      "timestamp": "2025-11-17T12:55:18.465281",
+      "exploit": "exploit/unix/misc/distcc_exec",
+      "payload": "cmd/unix/reverse",
+      "target": "A8:B1:3B:04:CE:AF",
+      "failure_type": "connection_refused",
+      "error_message": "Auth failed: HTTPConnectionPool(host='127.0.0.1', port=55553): Max retries exceeded with url: /api/ (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7f2cf89b2ad0>: Failed to establish a new connection: [Errno 111] Connection refused'))"
+    },
+    {
+      "timestamp": "2025-11-17T12:55:20.475417",
+      "exploit": "exploit/linux/http/shellshock_cgi",
+      "payload": "linux/x86/meterpreter/reverse_tcp",
+      "target": "A8:B1:3B:04:CE:AF",
+      "failure_type": "connection_refused",
+      "error_message": "Auth failed: HTTPConnectionPool(host='127.0.0.1', port=55553): Max retries exceeded with url: /api/ (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7f2cf88385a0>: Failed to establish a new connection: [Errno 111] Connection refused'))"
+    },
+    {
+      "timestamp": "2025-11-17T12:55:22.484365",
+      "exploit": "exploit/multi/handler",
+      "payload": "windows/meterpreter/reverse_tcp",
+      "target": "A8:B1:3B:04:CE:AF",
+      "failure_type": "connection_refused",
+      "error_message": "Auth failed: HTTPConnectionPool(host='127.0.0.1', port=55553): Max retries exceeded with url: /api/ (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7f2cf8838270>: Failed to establish a new connection: [Errno 111] Connection refused'))"
+    },
+    {
+      "timestamp": "2025-11-17T12:55:24.493584",
+      "exploit": "exploit/multi/handler",
+      "payload": "linux/x86/meterpreter/reverse_tcp",
+      "target": "A8:B1:3B:04:CE:AF",
+      "failure_type": "connection_refused",
+      "error_message": "Auth failed: HTTPConnectionPool(host='127.0.0.1', port=55553): Max retries exceeded with url: /api/ (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7f2cf8838160>: Failed to establish a new connection: [Errno 111] Connection refused'))"
+    },
+    {
+      "timestamp": "2025-11-17T12:55:26.505059",
+      "exploit": "exploit/multi/http/tomcat_mgr_deploy",
+      "payload": "java/meterpreter/reverse_tcp",
+      "target": "A8:B1:3B:04:CE:AF",
+      "failure_type": "connection_refused",
+      "error_message": "Auth failed: HTTPConnectionPool(host='127.0.0.1', port=55553): Max retries exceeded with url: /api/ (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7f2cf8838f30>: Failed to establish a new connection: [Errno 111] Connection refused'))"
+    },
+    {
+      "timestamp": "2025-11-17T12:55:28.514824",
+      "exploit": "exploit/multi/ssh/sshexec",
+      "payload": "linux/x86/meterpreter/reverse_tcp",
+      "target": "A8:B1:3B:04:CE:AF",
+      "failure_type": "connection_refused",
+      "error_message": "Auth failed: HTTPConnectionPool(host='127.0.0.1', port=55553): Max retries exceeded with url: /api/ (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7f2cf8839150>: Failed to establish a new connection: [Errno 111] Connection refused'))"
+    }
+  ],
+  "scan_optimizations": {},
+  "metadata": {
+    "created": "2025-11-16T23:27:08.349930",
+    "last_updated": "2025-11-19T08:06:21.566558",
+    "total_operations": 68,
+    "successful_operations": 34
+  }
+}

