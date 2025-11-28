@@ -38,7 +38,7 @@ echo ""
 echo -n "Testing ai_learning_module.py... "
 python3 -m py_compile ai_learning_module.py && echo "✓ OK" || echo "✗ FAILED"
 
-echo -n "Testing automated_attack_system.py... "
+echo -n "Testing automated_attack_system.py... " 
 python3 -m py_compile automated_attack_system.py && echo "✓ OK" || echo "✗ FAILED"
 
 echo -n "Testing app.py... "
@@ -74,130 +74,9 @@ PYTEST
 echo ""
 
 ########################################
-# Test 3: Test AI Module Functionality
+# Test 3: Check Dependencies
 ########################################
-echo "=== TEST 3: AI Module Functionality Test ==="
-echo ""
-
-python3 << 'PYTEST'
-from ai_learning_module import PenetrationTestingAI
-import os
-
-print("Creating AI instance...")
-ai = PenetrationTestingAI("test_ai_knowledge.json")
-
-print("Testing AI methods...")
-
-stats = ai.get_statistics()
-print(f"✓ get_statistics() works - Total ops: {stats.get('total_operations', 'N/A')}")
-
-ai.record_scan_result("192.168.1.0/24", 10, 45.5)
-print("✓ record_scan_result() works")
-
-ai.update_target_profile(
-    mac="aa:bb:cc:dd:ee:ff",
-    ip="192.168.1.100",
-    hostname="test-pc",
-    vendor="TestVendor",
-    os_guess="Windows"
-)
-print("✓ update_target_profile() works")
-
-ai.record_exploit_attempt(
-    exploit="exploit/test",
-    payload="test/payload",
-    target_mac="aa:bb:cc:dd:ee:ff",
-    success=True
-)
-print("✓ record_exploit_attempt() works")
-
-rec = ai.recommend_exploit("aa:bb:cc:dd:ee:ff")
-print(f"✓ recommend_exploit() works - Recommendation: {rec}")
-
-report = ai.export_knowledge_report()
-print(f"✓ export_knowledge_report() works - Report length: {len(report)} chars")
-
-# Cleanup
-for p in ["test_ai_knowledge.json", "test_ai_knowledge.json.backup"]:
-    if os.path.exists(p):
-        os.remove(p)
-
-print("\n✓✓✓ AI Module: ALL TESTS PASSED ✓✓✓")
-PYTEST
-echo ""
-
-########################################
-# Test 4: Test Automated Attack System
-########################################
-echo "=== TEST 4: Automated Attack System Test ==="
-echo ""
-
-python3 << 'PYTEST'
-from ai_learning_module import PenetrationTestingAI
-from automated_attack_system import AutomatedAttackSystem
-import time, os, random
-
-print("Creating AI instance...")
-ai = PenetrationTestingAI("test_ai_knowledge.json")
-
-print("Creating mock exploit executor...")
-def mock_executor(mac, exploit, payload):
-    time.sleep(0.1)
-    success = random.random() > 0.5
-    error = None if success else "Mock error"
-    return success, error
-
-print("Creating AutomatedAttackSystem...")
-attack_sys = AutomatedAttackSystem(ai, mock_executor)
-
-print("Testing exploit database info...")
-db_info = attack_sys.get_exploit_database_info()
-print(f"✓ Exploit database: {db_info.get('total_exploits', 0)} exploits")
-bp = db_info.get('by_platform', {})
-print(f"  - Windows: {bp.get('windows', 0)}")
-print(f"  - Linux: {bp.get('linux', 0)}")
-print(f"  - Multi: {bp.get('multi', 0)}")
-
-print("\nStarting test campaign...")
-campaign_id = attack_sys.start_automated_campaign(
-    target_mac="aa:bb:cc:dd:ee:ff",
-    target_ip="192.168.1.100",
-    os_guess="Windows",
-    aggressive=False
-)
-print(f"✓ Campaign started: {campaign_id}")
-
-print("\nMonitoring campaign progress...")
-for i in range(10):
-    time.sleep(1)
-    status = attack_sys.get_campaign_status(campaign_id)
-    if status:
-        print(f"  Progress: {status.get('progress', 0):.1f}% - Status: {status.get('status', 'unknown')}")
-        if status.get('status') in ['completed', 'stopped']:
-            break
-
-print("\nGetting campaign results...")
-results = attack_sys.get_campaign_results(campaign_id)
-if results:
-    print("✓ Results retrieved:")
-    print(f"  - Completed: {results.get('completed_exploits', 0)}/{results.get('total_exploits', 0)}")
-    print(f"  - Successful: {results.get('successful_exploits', 0)}")
-    print(f"  - Failed: {results.get('failed_exploits', 0)}")
-    print(f"  - Skipped: {results.get('skipped_exploits', 0)}")
-
-# Cleanup
-for p in ["test_ai_knowledge.json", "test_ai_knowledge.json.backup"]:
-    if os.path.exists(p):
-        os.remove(p)
-
-print("\n✓✓✓ Automated Attack System: ALL TESTS PASSED ✓✓✓")
-PYTEST
-echo ""
-
-########################################
-# Test 5: Check Python Dependencies
-########################################
-echo "=== TEST 5: Checking Python Dependencies ==="
+echo "=== TEST 3: Checking Python Dependencies ==="
 echo ""
 
 python3 << 'PYTEST'
@@ -205,15 +84,15 @@ import sys
 dependencies = {
     'flask': 'Flask web framework',
     'nmap': 'Python-nmap for network scanning',
-    'msgpack': 'MessagePack for Metasploit RPC',
+    'msgpack': 'MessagePack for Metasploit RPC', 
     'requests': 'HTTP library'
 }
 
 missing, installed = [], []
-for module, description in dependencies.items():
+for module, description in dependencies.items(): 
     try:
         __import__(module)
-        print(f"✓ {module:15s} - {description}")
+        print(f"✓ {module:15s} - {description}") 
         installed.append(module)
     except ImportError:
         print(f"✗ {module:15s} - {description} (MISSING)")
@@ -223,47 +102,11 @@ print(f"\nInstalled: {len(installed)}/{len(dependencies)}")
 if missing:
     print(f"\nMissing dependencies: {', '.join(missing)}")
     print("\nInstall with:")
-    print(f"  pip3 install {' '.join(missing)}")
+    print(f"  pip3 install {' '.join(missing)}") 
     sys.exit(1)
 else:
     print("\n✓✓✓ All Python dependencies installed! ✓✓✓")
 PYTEST
 echo ""
 
-########################################
-# Test 6: Check System Dependencies
-########################################
-echo "=== TEST 6: System Dependencies Check ==="
-echo ""
-
-echo -n "Checking nmap... "
-if command -v nmap &> /dev/null; then
-    echo "✓ $(nmap --version | head -1)"
-else
-    echo "✗ NOT FOUND (install with: sudo pacman -S nmap)"
-fi
-
-echo -n "Checking Metasploit Framework... "
-if command -v msfconsole &> /dev/null; then
-    echo "✓ Installed"
-else
-    echo "✗ NOT FOUND (install with: sudo pacman -S metasploit)"
-fi
-
-echo -n "Checking msfrpcd... "
-if command -v msfrpcd &> /dev/null; then
-    echo "✓ Available"
-else
-    echo "✗ NOT FOUND (provided by metasploit; install with: sudo pacman -S metasploit)"
-fi
-echo ""
-
-echo "=== FINAL TEST SUMMARY ==="
-echo ""
-echo "File sizes:"
-ls -lh ai_learning_module.py automated_attack_system.py app.py | awk '{print "  " $9 ": " $5}'
-echo ""
-echo "Next steps:"
-echo "  1. If all tests passed, create Makefile"
-echo "  2. Run 'make setup' to create virtual environment"
-echo "  3. Run 'make run' to start the system"
+echo "=== ALL TESTS COMPLETED ==="

@@ -962,3 +962,68 @@ if __name__ == "__main__":
     log.info(f"AI Statistics: {ai.get_statistics()}")
     log.info(f"Exploit Database: {attack_system.get_exploit_database_info()}")
     app.run(debug=False, host="0.0.0.0", port=5000)
+
+# Add port configuration at the end of file
+if __name__ == '__main__':
+    import sys
+    port = 5000
+    try:
+        app.run(host='0.0.0.0', port=port, debug=False)
+    except OSError as e:
+        if 'Address already in use' in str(e):
+            print(f"Port {port} in use, trying 5001...")
+            app.run(host='0.0.0.0', port=5001, debug=False)
+        else:
+            raise
+
+# Add port configuration at the end of file
+if __name__ == '__main__':
+    import sys
+    port = 5000
+    try:
+        app.run(host='0.0.0.0', port=port, debug=False)
+    except OSError as e:
+        if 'Address already in use' in str(e):
+            print(f"Port {port} in use, trying 5001...")
+            app.run(host='0.0.0.0', port=5001, debug=False)
+        else:
+            raise
+
+# Add port configuration at the end of file
+if __name__ == '__main__':
+    import sys
+    port = 5000
+    try:
+        app.run(host='0.0.0.0', port=port, debug=False)
+    except OSError as e:
+        if 'Address already in use' in str(e):
+            print(f"Port {port} in use, trying 5001...")
+            app.run(host='0.0.0.0', port=5001, debug=False)
+        else:
+            raise
+
+# Add port configuration at the end of file
+if __name__ == '__main__':
+    import sys
+    port = 5000
+    try:
+        app.run(host='0.0.0.0', port=port, debug=False)
+    except OSError as e:
+        if 'Address already in use' in str(e):
+            print(f"Port {port} in use, trying 5001...")
+            app.run(host='0.0.0.0', port=5001, debug=False)
+        else:
+            raise
+
+# Add port configuration at the end of file
+if __name__ == '__main__':
+    import sys
+    port = 5000
+    try:
+        app.run(host='0.0.0.0', port=port, debug=False)
+    except OSError as e:
+        if 'Address already in use' in str(e):
+            print(f"Port {port} in use, trying 5001...")
+            app.run(host='0.0.0.0', port=5001, debug=False)
+        else:
+            raise

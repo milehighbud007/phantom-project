@@ -327,14 +327,3 @@ install-system-deps:
 # ============================================================================
 # END
 # ============================================================================
-# Added by fix_phantom_project.sh: ensure fallback port handling
-.PHONY: run
-run:
-\t@python3 app.py || (echo "app failed, try alternate port" && python3 -m flask run --port=5001)
-
-# Check if port is available
-.PHONY: check-port
-check-port:
-	@echo "Checking port 5000..."
-	@! lsof -ti:5000 > /dev/null || (echo "Port 5000 in use, killing process..." && sudo kill -9 $$(lsof -ti:5000))
-	@echo "✓ Port 5000 is available"
