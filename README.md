@@ -1,10 +1,13 @@
-# Metasploit MCP Server
+# A combination of almost one-hundred Blackarch hack tools on a single user-friendly console based upon the Metasploit MCP Server with integrated AI.
 
 A Model Context Protocol (MCP) server for Metasploit Framework integration.
 
 
 https://github.com/user-attachments/assets/39b19fb5-8397-4ccd-b896-d1797ec185e1
 
+Official PHANTOM github page. If you find a problem, please report it here- milehighbud007@gmail.com
+
+Maintainers: BlackArch Linux developer Jackie-DeVere Allen Cole (DevPen187).
 
 ## Description
 
