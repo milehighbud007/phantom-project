@@ -7,7 +7,7 @@ https://github.com/user-attachments/assets/39b19fb5-8397-4ccd-b896-d1797ec185e1
 
 Official PHANTOM github page. If you find a problem, please report it here- milehighbud007@gmail.com
 
-Maintainers: BlackArch Linux developer Jackie-DeVere Allen Cole (DevPen187).
+Jackie-DeVere Allen Cole aka DevPen187 VP Architecture PinkHat Security Enterprise, Inc 1-719-421-6200
 
 ## Description
 
