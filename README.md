@@ -5,7 +5,7 @@ A Model Context Protocol (MCP) server for Metasploit Framework integration.
 
 https://github.com/user-attachments/assets/39b19fb5-8397-4ccd-b896-d1797ec185e1
 
-Official PHANTOM github page. If you find a problem, please report it here- devpen187@gmail.com@gmail.com
+Official PHANTOM github page. If you find a problem, please report it here- devpen187@gmail.com
 
 Jackie-DeVere Allen Cole aka DevPen187 VP Architecture PinkHat Security Enterprise, Inc 1-719-421-6200
 
