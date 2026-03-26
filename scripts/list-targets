@@ -1,0 +1,63 @@
+import threading
+import time
+import logging
+
+# Set up basic logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+class TargetCache:
+    """
+    Handles background scanning and thread-safe caching of target lists.
+    """
+    def __init__(self, ttl=10):
+        self._data = None
+        self._timestamp = 0
+        self._ttl = ttl
+        self._scanning = False
+        self._lock = threading.Lock()
+
+    def is_expired(self):
+        return (time.time() - self._timestamp) > self._ttl
+
+    def get_data(self):
+        with self._lock:
+            return self._data
+
+    def start_scan(self, scan_fn, *args, **kwargs):
+        with self._lock:
+            if self._scanning:
+                return None
+            self._scanning = True
+
+        def _worker():
+            try:
+                logger.info("Starting background target scan...")
+                result = scan_fn(*args, **kwargs)
+                with self._lock:
+                    self._data = result
+                    self._timestamp = time.time()
+            except Exception as e:
+                logger.error(f"Background scan failed: {e}")
+            finally:
+                with self._lock:
+                    self._scanning = False
+                logger.info("Background scan completed.")
+
+        thread = threading.Thread(target=_worker, daemon=True)
+        thread.start()
+        return thread
+
+# Initialize global cache instance
+_target_cache = TargetCache(ttl=10)
+
+def list_targets(scan_fn, *args, **kwargs):
+    """
+    Returns cached targets. Triggers a background refresh if the cache is expired.
+    """
+    current_data = _target_cache.get_data()
+    
+    if _target_cache.is_expired():
+        _target_cache.start_scan(scan_fn, *args, **kwargs)
+    
+    return current_data

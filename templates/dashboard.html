@@ -1,137 +1,101 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Metasploit MCP</title>
-  <link rel="icon" href="/static/favicon.ico">
-  <style>
-    body {
-      background-color: #000;
-      color: #fff;
-      font-family: 'Segoe UI', sans-serif;
-      font-weight: bold;
-      font-size: 1.1em;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: start;
-      height: 100vh;
-      width: 50vw;
-      padding: 20px;
-    }
-    button {
-      background-color: #00ff99;
-      color: #000;
-      border: none;
-      padding: 10px 20px;
-      margin: 10px;
-      cursor: pointer;
-      font-weight: bold;
-    }
-    select, textarea {
-      width: 100%;
-      margin: 10px 0;
-      padding: 10px;
-    }
-    .section {
-      margin-bottom: 20px;
-      width: 100%;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phantom Project | Metasploit MCP</title>
+    <link href="https://cdn.jsdelivr.net" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
-<body>
-  <h1>Metasploit MCP</h1>
+<body class="bg-dark text-light">
 
-<img src="/static/metasploit_targets_chart.png" alt="Target Chart" style="width:100%;">
+<nav class="navbar navbar-expand-lg navbar-dark bg-black border-bottom border-secondary">
+    <div class="container-fluid">
+        <a class="navbar-brand fw-bold text-danger" href="#">PHANTOM MCP</a>
+        <div class="d-flex">
+            <span class="badge bg-outline-secondary border me-2" id="msf-status">MSF: DISCONNECTED</span>
+            <span class="badge bg-success">DB: ACTIVE</span>
+        </div>
+    </div>
+</nav>
 
+<div class="container-fluid mt-4">
+    <div class="row">
+        <!-- Control Panel -->
+        <div class="col-md-4">
+            <div class="card bg-secondary text-white mb-3">
+                <div class="card-header fw-bold">Target Discovery</div>
+                <div class="card-body">
+                    <input type="text" id="target-range" class="form-control mb-2 bg-dark text-white border-secondary" placeholder="192.168.1.0/24">
+                    <button class="btn btn-danger w-100" onclick="startScan()">Scan for Vulnerabilities</button>
+                </div>
+            </div>
 
-  <div class="section">
-    <label for="targets">Available Targets:</label>
-    <select id="targets"></select>
-    <button onclick="scanTarget()">Scan for Vulnerabilities</button>
-  </div>
+            <div class="card bg-secondary text-white mb-3">
+                <div class="card-header fw-bold">Exploitation</div>
+                <div class="card-body">
+                    <label class="small">Available Exploits</label>
+                    <select id="exploit-select" class="form-select mb-2 bg-dark text-white border-secondary">
+                        <option>Loading exploits...</option>
+                    </select>
+                    <label class="small">Payload</label>
+                    <select id="payload-select" class="form-select mb-2 bg-dark text-white border-secondary">
+                        <option value="generic/shell_reverse_tcp">generic/shell_reverse_tcp</option>
+                        <option value="windows/x64/meterpreter/reverse_tcp">windows/x64/meterpreter/reverse_tcp</option>
+                    </select>
+                    <button class="btn btn-outline-warning w-100" onclick="launchAttack()">Execute Exploit</button>
+                </div>
+            </div>
+        </div>
 
-  <div class="section">
-    <label for="exploits">Available Exploits:</label>
-    <select id="exploits"></select>
-    <label for="payloads">Payloads:</label>
-    <select id="payloads"></select>
-    <button onclick="launchExploit()">Execute Exploit</button>
-  </div>
+        <!-- Monitoring Console -->
+        <div class="col-md-8">
+            <div class="card bg-black text-success border-secondary mb-3">
+                <div class="card-header bg-secondary text-white d-flex justify-content-between">
+                    <span>Active Sessions</span>
+                    <button class="btn btn-sm btn-outline-light" onclick="refreshSessions()">Refresh</button>
+                </div>
+                <div class="card-body p-0">
+                    <table class="table table-dark table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Target IP</th>
+                                <th>Platform</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="session-list">
+                            <tr><td colspan="4" class="text-center text-muted">No active sessions</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
 
-  <div class="section">
-    <label>Reverse Shells:</label>
-    <textarea id="shells" rows="5" readonly></textarea>
-  </div>
+            <div class="card bg-black border-secondary">
+                <div class="card-header bg-secondary text-white">Live Logs</div>
+                <div class="card-body small font-monospace" style="height: 200px; overflow-y: scroll;" id="log-output">
+                    [SYSTEM] Phantom MCP Dashboard initialized...
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
-  <div class="section">
-    <label>Backdoor Control:</label>
-    <button onclick="sendCommand()">Send Command</button>
-    <input type="text" id="command" placeholder="Enter command">
-  </div>
-
-  <script>
-    // Fetch targets
-    fetch("http://127.0.0.1:8085/list_targets")
-      .then(res => res.json())
-      .then(data => {
-        const targets = document.getElementById("targets");
-        data.targets.forEach(t => {
-          const opt = document.createElement("option");
-          opt.value = t;
-          opt.textContent = t;
-          targets.appendChild(opt);
-        });
-      });
-
-    function scanTarget() {
-      const target = document.getElementById("targets").value;
-      fetch(`http://127.0.0.1:8085/scan?target=${target}`)
-        .then(res => res.json())
-        .then(data => {
-          const exploits = document.getElementById("exploits");
-          exploits.innerHTML = "";
-          data.exploits.forEach(e => {
-            const opt = document.createElement("option");
-            opt.value = e;
-            opt.textContent = e;
-            exploits.appendChild(opt);
-          });
-        });
+<script>
+    async function startScan() {
+        const target = document.getElementById('target-range').value;
+        logMessage(`Starting scan on ${target}...`);
+        // Add fetch call to /api/scan here
     }
 
-    function launchExploit() {
-      const target = document.getElementById("targets").value;
-      const exploit = document.getElementById("exploits").value;
-      const payload = document.getElementById("payloads").value;
-      fetch("http://127.0.0.1:8085/launch", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ target, exploit, payload })
-      }).then(res => res.text())
-        .then(msg => alert("Exploit launched: " + msg));
+    function logMessage(msg) {
+        const output = document.getElementById('log-output');
+        const time = new Date().toLocaleTimeString();
+        output.innerHTML += `<div>[${time}] ${msg}</div>`;
+        output.scrollTop = output.scrollHeight;
     }
+</script>
 
-    function sendCommand() {
-      const cmd = document.getElementById("command").value;
-      fetch("http://127.0.0.1:8085/backdoor", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ command: cmd })
-      }).then(res => res.text())
-        .then(output => {
-          document.getElementById("shells").value += "\n$ " + cmd + "\n" + output;
-        });
-    }
-
-    // Poll reverse shells
-    setInterval(() => {
-      fetch("http://127.0.0.1:8085/sessions")
-        .then(res => res.json())
-        .then(data => {
-          document.getElementById("shells").value = data.sessions.map(s => `Session ${s.id}: ${s.status}`).join("\n");
-        });
-    }, 5000);
-  </script>
 </body>
 </html>

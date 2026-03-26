@@ -1,0 +1,12 @@
+[Unit]
+Description=MetasploitMCP Flask app
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/home/devpen11/Desktop/MetasploitMCP/.venv/bin/python /home/devpen11/Desktop/MetasploitMCP/app.py
+WorkingDirectory=/home/devpen11/Desktop/MetasploitMCP
+Restart=on-failure
+
+[Install]
+WantedBy=default.target

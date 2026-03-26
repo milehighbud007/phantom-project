@@ -1,7 +1,18 @@
-fastapi>=0.95.0
+# Web Frameworks & Servers
+flask>=2.3.2
+fastapi>=0.100.0
 uvicorn[standard]>=0.22.0
+python-dotenv>=1.0.0
+
+# MCP (Model Context Protocol) & AI
+mcp>=1.0.0
+fastmcp>=0.4.1
+
+# Penetration Testing Core
 pymetasploit3>=1.0.6
-mcp>=1.6.0
-fastmcp>=2.10.3
-flask
-python-nmap
+python-nmap>=0.7.1
+psutil>=5.9.5
+
+# Data & Utilities
+requests>=2.31.0
+pydantic>=2.0.0
