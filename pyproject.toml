@@ -1,63 +1,27 @@
 [project]
 name = "phantom"
 version = "0.1.0"
-description = "PHANTOM: Automated Penetration Testing & Learning System"
-authors = [
-    { name = "DevPen187" }
-]
-readme = "README.md"
+description = "Phantom pentesting project"
 requires-python = ">=3.10"
-keywords = ["pentesting", "metasploit", "automation", "security"]
-classifiers = [
-    "Programming Language :: Python :: 3",
-    "Topic :: Security",
-    "Operating System :: POSIX :: Linux"
-]
-dependencies = [
-    "flask>=2.3.0",
-    "pymetasploit3>=1.0.3",
-    "requests>=2.31.0",
-    "python-dotenv>=1.0.0",
-    "psutil>=5.9.0"
-]
-
-[project.optional-dependencies]
-test = [
-    "pytest>=7.4.0",
-    "pytest-asyncio>=0.21.1",
-    "pytest-mock>=3.11.1",
-    "pytest-cov>=4.1.0"
-]
-
-[project.urls]
-Homepage = "https://github.com"
 
 [project.scripts]
 phantom = "app:create_app"
+metasploit-mcp = "phantom.metasploit.metasploit_mcp:main"
 
 [build-system]
-requires = ["setuptools>=61.0"]
+requires = ["setuptools>=68", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools]
-packages = ["phantom"]
-package-dir = {"" = "."}
+package-dir = {"" = "src"}
 
-[tool.pytest.ini_options]
-testpaths = ["tests"]
-python_files = "test_*.py"
-addopts = "--strict-markers --cov=phantom"
-markers = [
-    "unit: Unit tests",
-    "integration: Integration tests",
-    "network: Tests requiring network access",
-    "slow: Tests that take a long time to run"
-]
+[tool.setuptools.packages.find]
+where = ["src"]
 
-[tool.black]
-line-length = 88
-target-version = ['py310']
+[dependency-groups]
+dev = []
 
-[tool.isort]
-profile = "black"
-line_length = 88
+
+
+
+

@@ -13,6 +13,7 @@ from unittest.mock import Mock, patch
 # 1. Path Setup: Add project root to Python path
 ROOT_DIR = Path(__file__).parent
 sys.path.insert(0, str(ROOT_DIR))
+sys.path.insert(0, str(ROOT_DIR / "src"))
 
 def pytest_configure(config):
     """Configure pytest with custom settings and global mocks."""
@@ -109,6 +110,9 @@ def pytest_runtest_setup(item):
 
 @pytest.fixture(autouse=True)
 def reset_global_state():
-    """Ensures a clean state for MetasploitMCP between tests."""
-    with patch('MetasploitMCP.MetasploitMCP._instance', None):
+    """Ensures a clean state for legacy tests when that module exists."""
+    try:
+        with patch('MetasploitMCP.MetasploitMCP._instance', None):
+            yield
+    except ModuleNotFoundError:
         yield

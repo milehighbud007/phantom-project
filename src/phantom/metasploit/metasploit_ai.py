@@ -132,8 +132,8 @@ class MetasploitDecider:
 if __name__ == "__main__":
     print(f"{chr(27)}[31m") # Red Text
     print("   (      (      ")
-    print("   )\ )   )\ )   ")
-    print("  (()/(  (()/(   PHANTOM METASPLOIT AI")
+    print(r"   )\ )   )\ )   ")
+    print(r"  (()/(  (()/(   PHANTOM METASPLOIT AI")
     print("   /(_))  /(_))  INITIALIZING NEURAL DECISION CORE...")
     print(f"{chr(27)}[0m")
     

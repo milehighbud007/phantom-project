@@ -14,9 +14,16 @@ class MsftAdapter:
     High-level interface for Metasploit RPC.
     Features: Automated reconnects, local module caching, and smart suggestion engine.
     """
-    def __init__(self, password: str = "kali", host: str = "127.0.0.1", user: str = "msf"):
+    def __init__(
+        self,
+        password: str = "kali",
+        host: str = "127.0.0.1",
+        port: int = 55553,
+        user: str = "msf",
+    ):
         self.password = password
         self.host = host
+        self.port = port
         self.user = user
         self.client = None
         self._module_cache = {"exploit": [], "payload": [], "post": []}
@@ -25,12 +32,21 @@ class MsftAdapter:
     def connect(self) -> bool:
         """Establishes session with msfrpcd and warms up the cache."""
         try:
-            self.client = MsfRpcClient(self.password, server=self.host, username=self.user)
+            self.client = MsfRpcClient(
+                self.password,
+                server=self.host,
+                port=self.port,
+                username=self.user,
+            )
             self._refresh_cache()
             return True
         except Exception as e:
             logger.error(f"Failed to connect to MSF RPC: {e}")
             return False
+
+    def is_connected(self) -> bool:
+        """Best-effort connection status check for API handlers."""
+        return self.client is not None
 
     def _refresh_cache(self):
         """Pre-fetches module lists to avoid slow RPC calls during scanning."""
@@ -98,4 +114,3 @@ class MsftAdapter:
 
         # Sort by score descending
         return sorted(results, key=lambda x: x['score'], reverse=True)[:25]
-

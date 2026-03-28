@@ -15,11 +15,11 @@ src/phantom.egg-info/SOURCES.txt
 src/phantom.egg-info/dependency_links.txt
 src/phantom.egg-info/entry_points.txt
 src/phantom.egg-info/top_level.txt
-src/phantom/metasploit/MetasploitMCP.py
 src/phantom/metasploit/__init__.py
+src/phantom/metasploit/metasploit_ai.py
+src/phantom/metasploit/metasploit_mcp.py
 src/phantom/msf/__init__.py
 src/phantom/msf/adapter.py
 src/phantom/msf/rpc_client.py
-tests/test_helpers.py
-tests/test_options_parsing.py
-tests/test_tools_integration.py
+tests/test_config_database.py
+tests/test_safe_modules.py

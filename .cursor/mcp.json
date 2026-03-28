@@ -1,0 +1,16 @@
+{
+  "mcpServers": {
+    "metasploit-mcp": {
+      "command": "uv",
+      "args": ["run", "metasploit-mcp"],
+      "cwd": "/home/DevPen187/projects/phantom-project",
+      "env": {
+        "MSF_RPC_HOST": "127.0.0.1",
+        "MSF_RPC_PORT": "55553",
+        "MSF_RPC_USER": "msf",
+        "MSF_RPC_PASSWORD": "CHANGE_ME",
+        "MSF_RPC_SSL": "false"
+      }
+    }
+  }
+}
